@@ -1,0 +1,9 @@
+# Node.js dependencies
+node_modules/
+
+# SQLite database file
+db.sqlite
+
+# Logs and temp files
+*.log
+*.tmp
