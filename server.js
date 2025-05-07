@@ -12,6 +12,10 @@ app.use(express.json());
 // Serve static files from "public" folder (if you add an index.html later)
 app.use(express.static('public'));
 
+// Tells express to serve files from the pdfs/ folder at the /pdfs route
+app.use('/pdfs', express.static('pdfs'));
+
+
 // Endpoint to get list of PDFs
 app.get('/api/pdfs', (req, res) => {
   db.all('SELECT * FROM pdfs', [], (err, rows) => {

@@ -4,9 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>frekabob</h1>
-    <h2>go girl</h2>
+    <div class="Screen">
+        <div class="SideBar">
+            <div class="Pages">
+
+                <div class="Logo">
+                    <img src="images/e2logo.png" alt="e2logo">
+                </div>
+                <a href="index.html">
+                    <div class="Dashboard">
+                        <p>Dashboard</p>
+                    </div>
+                </a>
+                <a href="newsched.html">
+                    <div class="NewSchedule">
+                        <p>New Schedule</p>
+                    </div>
+                </a>
+
+            </div>
+
+            <a href="newspec.html">
+                <div class="UploadNew">
+                <p>+ Upload New Spec Sheet</p>
+                </div>
+            </a>
+
+        </div>
+        <div class="MainView">
+
+            <div class="PDFBox">
+                <h1>Uploaded PDFs</h1>
+                <div id="pdfEntry">
+                    <div id="pdfHeader">
+                        <p>NAME</p>
+                        <p>MANUFACTURER</p>
+                        <p>LINK</p>
+                    </div>
+                    <div id="display-pdfs">
+                    </div>
+                </div>
+                <div class="PopUp">
+                    <!-- to do: add pop up screen overlay and edit it in css to be hidden-->
+                </div>
+            </div>
+            <div class="ButtonBox">
+                <button id="open_button">Open</button>
+                <button id="edit_button">Edit Data</button>
+            </div>
+
+        </div>
+    </div>
+    <script src="action.js"></script>
 </body>
 </html>
