@@ -3,7 +3,7 @@
     font-family: Arial, Helvetica, sans-serif; 
 }
 
-/* Link Styling */
+                                                /* Link Styling */
 a:link {
     color: black;
     text-decoration: none;
@@ -21,18 +21,17 @@ a:active {
     text-decoration: none;
 }
 
-/* Button Styling */
+                                                /* Button Styling */
 button {
     background-color: #6eb236;
     border: solid 1px;
     text-decoration: none;
     height: 50%;
     width: 15%;
-    margin-left: 2%;
     font-size: medium;
 }
 
-/* Main Screen Display */
+                                               /* Main Screen Display */
 .Screen {
     display: flex;
     flex-direction: row;
@@ -52,7 +51,7 @@ button {
     padding: 1%;
 }
 
-/* SideBar Separation - Pages and UploadNew */
+                                               /* SideBar Separation - Pages and UploadNew */
 .Pages {
     height: 80%;
     font-size: larger;
@@ -72,7 +71,7 @@ button {
 
 }
 
-/* Pages Separation - Logo, Dashboard, NewSchedule */
+                                               /* Pages Separation - Logo, Dashboard, NewSchedule */
 .Logo {
     height: 25%;
     display: flex;
@@ -121,7 +120,7 @@ button {
     padding: 0;
 }
 
-/* MainView Separation - PDFBox and ButtonBox */
+                                               /* MainView Separation - PDFBox and ButtonBox */
 .PDFBox {
     background-color: white;
     height: 85%;
@@ -132,23 +131,22 @@ button {
     height: 15%;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding-left: 1%;
+    padding-right: 1%;
 }
-
-#pdfEntry {
+#pdf-entry {
     height: 90%;
     margin-top: 1%;
     border-top: solid black 1px;
     border-bottom: solid black 1px;
-
 }
-
-#pdfHeader {
+#pdf-header {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
-
-#pdfHeader p {
+#pdf-header p {
     height: 2%;
     padding: 1%;
     padding-left: 2%;
@@ -163,15 +161,20 @@ button {
     align-items: center;
     border-top: solid #dddddd 1px;
 }
-
-#display-pdfs p, a {
+#display-pdfs p {
     height: 2%;
     padding: 1%;
     width: 30%;    
     padding-left: 2%;
     font-size: large;
 }
-
+#display-pdfs a {
+    height: 2%;
+    padding: 1%;
+    width: 30%;    
+    padding-left: 2%;
+    font-size: large;
+}
 #display-pdfs a:link {
     color: rgb(15, 15, 110);
     text-decoration: underline;
@@ -188,7 +191,6 @@ button {
     color: rgb(15, 15, 110);
     text-decoration: underline;
 }
-
 .file {
     display: flex;
     flex-direction: row;
@@ -197,7 +199,6 @@ button {
     background-color: white;
 
 }
-
 .file.selected {
     display: flex;
     flex-direction: row;
@@ -205,35 +206,171 @@ button {
     border-top: solid #dddddd 1px;
     background-color: #dddddd;
 }
-
-/* New Schedule Specific CSS */
-#pdfName {
-    height: 5%;
-    width: 20%;
-    text-decoration: none;
+.popup {
+    position: absolute;
+    width: 82%;
+    height: 92%;
+    transform: translate(-1.2%, -84%);
+    background-color: white;
+    border: solid black 1px;
+    visibility: hidden;
 }
-#pdfCategories {
-    height: 70%;
+.popup.open {
+    visibility: visible;
+}
+
+#popup-header {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    height: 12%;
+}
+#popup-header-mn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 1%;
+    padding-left: 2%;
+    width: 50%;
+    color: grey;
+    font-size: smaller;
+}
+#popup-header-manu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 1%;
+    padding-left: 2%;
+    width: 25%;
+    color: grey;
+    font-size: smaller;
+}
+#popup-header-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 1%;
+    padding-left: 2%;
+    width: 25%;
+    color: grey;
+    font-size: smaller;
+
+}
+
+#popup-header-link a {
+    padding: 0%;
+    margin: 0%;
+}
+#popup-header p {
+    padding: 0%;
+    margin: 0%;
+}
+
+#popup-header-link a:link {
+    color: rgb(15, 15, 110);
+    text-decoration: underline;
+}
+#popup-header-link a:visited {
+    color: rgb(15, 15, 110);
+    text-decoration: underline;
+}
+#popup-header-link a:hover {
+    color: rgb(38, 38, 255);
+    text-decoration: underline;
+}
+#popup-header-link a:active {
+    color: rgb(15, 15, 110);
+    text-decoration: underline;
+}
+.pdf_in_use {
+    font-size: large;
+    color: black;
+}
+
+#popup-body {
+    height: 68%;
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+}
+
+#popup-body label {
     width: 100%;
-    text-decoration: none;
+    color: grey;
+    font-size: smaller;
+    padding-bottom: 2%;
+    text-transform: uppercase;
+}
+
+#popup-body-main {
+    height: 80%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+#popup-body-main div {
+    display: flex;
+    flex-direction: column;
+    height: 20%;
+    width: 24%;
+} 
+#popup-body-notes {
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+}
+#popup-body-notes label {
+    padding-bottom: 1%;
+}
+
+#popup-body-notes input {
+    height: 60%;
+    width: 97%;
+    border: solid black 1px;
+}
+
+#popup-buttons {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content:space-between;
+    justify-content: space-between;
+    padding-left: 2%;    
+    padding-right: 2%;
+    height: 15%;
 }
-#pdfCategories div {
-    font-size: small;
-    text-decoration: none;
-    padding: 1%;
+
+                                               /* New Schedule Specific CSS */
+.SchedulesBox {
+    background-color: white;
+    height: 85%;
     margin: 1%;
 }
-#pdfCategories select {
-    height: 100%;
-    width: 100%;
-    font-size: small;
-    text-decoration: none;
+#schedule-list {
+    height: 90%;
+    margin-top: 1%;
+    border-top: solid black 1px;
+    border-bottom: solid black 1px;
 }
-#prodID {
-    border: solid blue;
-    height: 30px;
+#schedule-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#name-header {
+    height: 2%;
+    padding: 1%;
+    padding-left: 2%;
+    width: 80%;
+    color: grey;
+    font-size: smaller;
+}
+#date-header {
+    height: 2%;
+    padding: 1%;
+    padding-left: 2%;
+    width: 20%;
+    color: grey;
+    font-size: smaller;
 }

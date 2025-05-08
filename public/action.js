@@ -1,12 +1,32 @@
-// new section for getting db data
+// variables
 
 const pdfSelect = document.getElementById('pdf-select');
 const optionsSelect = document.getElementById('options-select');
 const displayPDF = document.getElementById('display-pdfs');
 
 let selectedDiv = null;
+let popup = document.getElementById('popup');
 
-// 1. Load the PDFs on page load
+function updateModelNumber() {
+    const allSelections = document.querySelectorAll('#popup-body-main select.selection');
+    let modelNumberParts = [];
+  
+    for (let select of allSelections) {
+      const label = select.previousElementSibling?.textContent.trim();
+  
+      // Change "Max Field" to whatever label text should cause it to stop
+      if (label === "FINISH") break;
+  
+      const val = select.value;
+      modelNumberParts.push(val);
+    }
+  
+    const modelNumber = modelNumberParts.join('-');
+    document.getElementById('mn').textContent = modelNumber;
+  }
+
+
+//loading in pdfs
 fetch('/api/pdfs')
   .then(res => res.json())
   .then(pdfs => {
@@ -40,101 +60,111 @@ fetch('/api/pdfs')
 
         displayPDF.appendChild(display);
 
+        display.setAttribute("data-type", pdf.type);
+        display.setAttribute("data-manufacturer", pdf.manufacturer);
+        display.setAttribute("data-link", pdf.spec_sheet);
+
     });
 
-    // Automatically trigger first dropdown's options if available
-    if (pdfs.length > 0) {
-      loadOptionsForPDF(pdfs[0].id);
-    }
+
   });
 
-  // TO BE UPDATED BUT BUTTON AND SELECTION WORKS
+  const displayPDFdetails = document.getElementById('popup-body-main');
+
+  // popup functions
+  function openPopup(selectedDiv) {
+
+    popup.classList.add("open");
+
+    document.getElementById('popup-body-main').innerHTML = '';
+
+    const type = selectedDiv.dataset.type;
+    const manufacturer = selectedDiv.dataset.manufacturer;
+    const link = selectedDiv.dataset.link;
+
+    const mn = document.getElementById("popup-header-mn");
+    const display_mn = document.createElement('p');
+    display_mn.textContent = "________________________";
+    display_mn.id = "mn";
+    display_mn.className = "pdf_in_use";
+    mn.appendChild(display_mn);
+
+    const manu = document.getElementById("popup-header-manu");
+    const display_manu = document.createElement('p');
+    display_manu.textContent = `${manufacturer}`;
+    display_manu.className = "pdf_in_use";
+    manu.appendChild(display_manu);
+
+    const lk = document.getElementById("popup-header-link");
+    const display_lk = document.createElement('a');
+    display_lk.href = `${link}`;
+    display_lk.textContent = `${link}`;
+    display_lk.target = '_blank';
+    display_lk.className = "pdf_in_use";
+    lk.appendChild(display_lk);
+
+    fetch('/api/selections')
+    .then(res => res.json())
+    .then(selections => {
+        selections.forEach(sel => {
+            if (sel.type == selectedDiv.dataset.type) {
+                const display_div = document.createElement('div');
+                if (sel.field_name != "notes") {
+                    const display_label = document.createElement('label');
+                display_label.textContent = sel.field_name;
+                display_div.appendChild(display_label);
+
+                const display_select = document.createElement('select');
+                display_select.textContent = sel.field_name;
+                display_select.classList.add('selection');
+                display_div.appendChild(display_select);
+
+                fetch('/api/options')
+                .then(res => res.json())
+                .then(options => {
+                    options.forEach(opt => {
+                        if (opt.field_name == sel.field_name) {
+                            const new_opt = document.createElement('option');
+                            new_opt.textContent = opt.option_name;
+                            new_opt.option = opt.option_name;
+                            display_select.appendChild(new_opt);
+                        }   
+                    });
+                    display_select.addEventListener('change', updateModelNumber);
+                    updateModelNumber();
+                });
+                displayPDFdetails.appendChild(display_div);
+                }
+            }   
+        });
+    });
+  }
+
+  function closePopup() {
+    popup.classList.remove("open");
+    document.querySelectorAll('.pdf_in_use').forEach(el => el.remove());
+  }
+
   document.getElementById("open_button").addEventListener("click", function() {
     if (selectedDiv) {
-        alert(`Selected div says: ${selectedDiv.textContent}`);
+        openPopup(selectedDiv);
+
+    } else {
+        alert("Please select a PDF.")
     }
   });
-// // 2. Load dropdown options for selected PDF
-// function loadOptionsForPDF(pdfId) {
-//   fetch(`/api/pdfs/${pdfId}/options`)
-//     .then(res => res.json())
-//     .then(options => {
-//       optionsSelect.innerHTML = ''; // clear previous options
-//       options.forEach(opt => {
-//         const option = document.createElement('option');
-//         option.value = opt.id;
-//         option.textContent = opt.option_text;
-//         optionsSelect.appendChild(option);
-//       });
-//     });
-// }
 
-// // 3. When user selects a different PDF, load its options
-// pdfSelect.addEventListener('change', (e) => {
-//   const selectedPdfId = e.target.value;
-//   loadOptionsForPDF(selectedPdfId);
-// });
+  document.getElementById("exit_button").addEventListener("click", function() {
+    closePopup();
+  });
+
+  document.getElementById("add_button").addEventListener("click", function() {
+    closePopup();
+    // also do other things
+  });
 
 
 
 
 
-/* THIS WILL NEED TO BE HOW DB IS SET UP TO RETRIEVE INFO */
-const data = {
-    FA: {Series: ["BLPW2", "BLPW4", "BLPW8"],
-        Lumens: ["8L", "20L", "33L"],
-        Lens: ["ADP", "ADSM", "SDP"]
-        },
-    FB: {Series: ["CLX"],
-        Length: ["L24", "L36", "L48"],
-        Lumens: ["1500", "20L", "33L"]
-        }
-}
-
-// Populating PDF Dropdown Details
-document.getElementById("pdfName").addEventListener("change", function() {
-    const pdfName = this.value;
-    const pdfCategories = document.getElementById("pdfCategories");
-
-    pdfCategories.innerHTML = "";
-
-    if (pdfName && data[pdfName]) {
-        Object.keys(data[pdfName]).forEach(item => {
-            // div
-            let newEntry = document.createElement("div");
-            // label
-            let label = document.createElement("label");
-            label.textContent = item;
-            // select
-            let select = document.createElement("select");
-            // options
-            data[pdfName][item].forEach(options => {
-                let option = document.createElement("option");
-                option.value = options;
-                option.textContent = options;
-                select.append(option);
-            });
-            // adding label and select to div
-            newEntry.appendChild(label);
-            newEntry.appendChild(select);
-            // add div to parent div
-            pdfCategories.appendChild(newEntry);
-        });
-    }
-});
-
-
-document.getElementById("pdfCategories").addEventListener("change", function() {
-    StringID = "";
-
-    prodID.innerHTML = "";
-
-    document.querySelectorAll("#pdfCategories select").forEach(select => {
-        StringID += select.value + " ";
-    });
-
-    let DisplayID = document.createElement("p");
-    DisplayID.textContent = StringID;
-    prodID.appendChild(DisplayID);
-});
 

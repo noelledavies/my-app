@@ -51,21 +51,25 @@ db.serialize(() => {
     ('FA.pdf', 'color_temp'), 
     ('FA.pdf', 'light_interface'), 
     ('FA.pdf', 'control'),
-    ('FA.pdf', 'finish'), 
+    ('FA.pdf', 'finish'),
+    ('FA.pdf', 'voltage_req'),  
+    ('FA.pdf', 'source'), 
     ('FA.pdf', 'wattage'), 
     ('FA.pdf', 'lumen_level'), 
     ('FA.pdf', 'color_temp_k'), 
     ('FA.pdf', 'driver_req'), 
     ('FA.pdf', 'dimensions'), 
-    ('FA.pdf', 'mounting type'), 
+    ('FA.pdf', 'mounting_type'), 
     ('FA.pdf', 'luminaire_type'), 
     ('FA.pdf', 'notes'); 
   `);
+  // series
   db.run(`INSERT INTO options (field_name, option_name) VALUES 
     ('series', 'BLWP2'), 
     ('series', 'BLWP4'), 
     ('series', 'BLWP8');
   `);
+  // lumens
   db.run(`INSERT INTO options (field_name, option_name, dependent) VALUES 
     ('lumens', '8L', 'BLWP2' ), 
     ('lumens', '20L', 'BLWP2'), 
@@ -110,6 +114,138 @@ db.serialize(() => {
     ('lumens', '180LHE', 'BLWP8'),
     ('lumens', '200LHE', 'BLWP8');
   `);
+  // lens
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('lens', 'ADP'), 
+    ('lens', 'ADSM'),
+    ('lens', 'SDP'), 
+    ('lens', 'SDSM'),
+    ('lens', 'PDSM'), 
+    ('lens', 'ADPT'), 
+    ('lens', 'ADSMT'),
+    ('lens', 'SDPT'), 
+    ('lens', 'SDSMT'),
+    ('lens', 'PDSMT');
+  `);
+
+  // voltage
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('voltage', 'MVOLT'), 
+    ('voltage', '120'),
+    ('voltage', '277'), 
+    ('voltage', '347');
+  `);
+
+  // driver
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('driver', 'EZ1'), 
+    ('driver', 'GZ1'),
+    ('driver', 'GZ10'), 
+    ('driver', 'SLD');
+  `);
+
+  // color temp
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('color_temp', 'LP830'), 
+    ('color_temp', 'LP835'),
+    ('color_temp', 'LP840'), 
+    ('color_temp', 'LP850'),
+    ('color_temp', 'LP930'),
+    ('color_temp', 'LP935'),
+    ('color_temp', 'LP940'),
+    ('color_temp', 'LP950');
+  `);
+
+  // light_interface
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('light_interface', 'N80'), 
+    ('light_interface', 'N80EMG'),
+    ('light_interface', 'N100'), 
+    ('light_interface', 'N100EMG'),
+    ('light_interface', 'NLTAIR2');
+  `);
+
+  // control
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('control', 'null'),
+    ('control', 'NES7'), 
+    ('control', 'NESPDT7'),
+    ('control', 'NES7ADCX'), 
+    ('control', 'NESPDT7ADCX'),
+    ('control', 'RES7'),
+    ('control', 'RES7PDT'), 
+    ('control', 'RIO'),
+    ('control', 'RES7EM'), 
+    ('control', 'RES7PDTEM'),
+    ('control', 'RIOEM'),
+    ('control', 'MSD7ADCX'),
+    ('control', 'MSDPDT7ADCX'), 
+    ('control', 'JOT'),
+    ('control', 'JOTVTX15');
+  `);
+
+  // finish
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('finish', 'WH'), 
+    ('finish', 'PAF'),
+    ('finish', 'DNA');
+  `);
+
+  // voltage_req
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('voltage_req', '120V');
+  `);
+
+  // source
+  db.run(`INSERT INTO options (field_name, option_name) VALUES 
+    ('source', 'INTEGRATED LED'),
+    ('source', 'LED LAMP');
+  `);
+
+// wattage
+db.run(`INSERT INTO options (field_name, option_name) VALUES 
+  ('wattage', '74W');
+`);
+
+// driver_req
+db.run(`INSERT INTO options (field_name, option_name) VALUES 
+  ('driver_req', '0-10V DIMMING'),
+  ('driver_req', 'LINE VOLTAGE DIMMING'),
+  ('driver_req', 'STANDARD NON-DIMMING'),
+  ('driver_req', 'INTEGRATED IN LAMP');
+`);
+
+// dimensions
+db.run(`INSERT INTO options (field_name, option_name) VALUES 
+  ('dimensions', '2''-0" LONG'),
+  ('dimensions', '4''-0" LONG'),
+  ('dimensions', '8''-0" LONG');
+`);
+
+// mounting_type
+db.run(`INSERT INTO options (field_name, option_name) VALUES 
+  ('mounting_type', 'SURFACE'), 
+  ('mounting_type', 'WALL'),
+  ('mounting_type', 'SUSPENDED'),
+  ('mounting_type', 'RECESSED'), 
+  ('mounting_type', 'AT GRADE'),
+  ('mounting_type', 'MIXED');
+`);
+
+// luminaire_type
+db.run(`INSERT INTO options (field_name, option_name) VALUES 
+  ('luminaire_type', 'LINEAR LUMINAIRE'), 
+  ('luminaire_type', 'LINEAR WRAP LUMINAIRE'),
+  ('luminaire_type', 'VANITY LUMINAIRE'),
+  ('luminaire_type', 'VOLUMETRIC LUMINAIRE'), 
+  ('luminaire_type', 'FLAT PANEL LUMINAIRE'),
+  ('luminaire_type', 'WAFER DOWNLIGHT LUMINAIRE'),
+  ('luminaire_type', 'DOWNLIGHT LUMINAIRE'),
+  ('luminaire_type', 'SCONCE LUMINAIRE'),
+  ('luminaire_type', 'UPLIGHT LUMINAIRE'),
+  ('luminaire_type', 'AREA/FLOOD LUMINAIRE');
+`);
+
 });
 
 db.close();

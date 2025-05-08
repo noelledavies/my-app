@@ -12,7 +12,7 @@
             <div class="Pages">
 
                 <div class="Logo">
-                    <h1>Logo</h1>
+                    <img src="images/e2logo.png" alt="e2logo">
                 </div>
                 <a href="index.html">
                     <div class="Dashboard">
@@ -21,7 +21,7 @@
                 </a>
                 <a href="newsched.html">
                     <div class="NewSchedule">
-                        <p>New Schedule</p>
+                        <p>Schedules</p>
                     </div>
                 </a>
 
@@ -36,24 +36,24 @@
         </div>
         <div class="MainView">
 
-            <div class="PDFBox">
-                <h1>New Schedule</h1>
-                <h1>PDFBox</h1>
-                <label for="pdfName">Spec Sheet</label>
-                <select id="pdfName">
-                    <option value="Select">Select</option>
-                    <option value="FA">FA</option>
-                    <option value="FB">FB</option>
-                </select>
-                <div id="pdfCategories">
-                    
-                </div>
-                <div id="prodID">
-                    <p>____ ____ _____ ____ ____ ___ _______</p>
+            <div class="SchedulesBox">
+                <h1>Schedules</h1>
+                <div id="schedule-list">
+                    <div id="schedule-header">
+                        <div id="name-header">
+                            <p>NAME</p>
+                        </div>
+                        <div id="date-header">
+                            <p>DATE</p>
+                        </div>
+                    </div>
+                    <div id="display-schedules">
+                    </div>
                 </div>
             </div>
             <div class="ButtonBox">
-                <h1>ButtonBox</h1>
+                <button id="delete_button">Delete Schedule</button>
+                <button id="export_button">Export to Excel</button>
             </div>
 
         </div>

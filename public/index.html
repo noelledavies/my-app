@@ -21,7 +21,7 @@
                 </a>
                 <a href="newsched.html">
                     <div class="NewSchedule">
-                        <p>New Schedule</p>
+                        <p>Schedules</p>
                     </div>
                 </a>
 
@@ -38,8 +38,8 @@
 
             <div class="PDFBox">
                 <h1>Uploaded PDFs</h1>
-                <div id="pdfEntry">
-                    <div id="pdfHeader">
+                <div id="pdf-entry">
+                    <div id="pdf-header">
                         <p>NAME</p>
                         <p>MANUFACTURER</p>
                         <p>LINK</p>
@@ -47,8 +47,32 @@
                     <div id="display-pdfs">
                     </div>
                 </div>
-                <div class="PopUp">
-                    <!-- to do: add pop up screen overlay and edit it in css to be hidden-->
+                <div class="popup" id="popup">
+                    <div id="popup-header">
+                        <div id="popup-header-mn">
+                            <p>MODEL NUMBER</p>
+                        </div>
+                        <div id="popup-header-manu">
+                            <p>MANUFACTURER</p>
+                        </div>
+                        <div id="popup-header-link">
+                            <p>LINK</p>
+                        </div>
+                        <!-- model number first then manufacturer then file name-->
+                    </div>
+                    <div id="popup-body">
+                        <div id="popup-body-main">
+
+                        </div>
+                        <div id="popup-body-notes">
+                            <label>Notes</label>
+                            <input type="text" id="notes">
+                        </div>
+                    </div>
+                    <div id="popup-buttons">
+                            <button id="exit_button">Exit</button>
+                            <button id="add_button">Add to Schedule</button>
+                    </div>
                 </div>
             </div>
             <div class="ButtonBox">

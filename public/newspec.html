@@ -12,7 +12,7 @@
             <div class="Pages">
 
                 <div class="Logo">
-                    <h1>Logo</h1>
+                    <img src="images/e2logo.png" alt="e2logo">
                 </div>
                 <a href="index.html">
                     <div class="Dashboard">
@@ -21,7 +21,7 @@
                 </a>
                 <a href="newsched.html">
                     <div class="NewSchedule">
-                        <p>New Schedule</p>
+                        <p>Schedules</p>
                     </div>
                 </a>
 
@@ -37,11 +37,23 @@
         <div class="MainView">
 
             <div class="PDFBox">
-                <h1>New Spec</h1>
-                <h1>PDFBox</h1>
+                <h1>Uploaded PDFs</h1>
+                <div id="pdfEntry">
+                    <div id="pdfHeader">
+                        <p>NAME</p>
+                        <p>MANUFACTURER</p>
+                        <p>LINK</p>
+                    </div>
+                    <div id="display-pdfs">
+                    </div>
+                </div>
+                <div class="PopUp">
+                    <!-- to do: add pop up screen overlay and edit it in css to be hidden-->
+                </div>
             </div>
             <div class="ButtonBox">
-                <h1>ButtonBox</h1>
+                <button id="open_button">Open</button>
+                <button id="edit_button">Edit Data</button>
             </div>
 
         </div>

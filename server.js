@@ -15,6 +15,9 @@ app.use(express.static('public'));
 // Tells express to serve files from the pdfs/ folder at the /pdfs route
 app.use('/pdfs', express.static('pdfs'));
 
+// Tells express to serve files from the pdfs/ folder at the /pdfs route
+//app.use('/selections', express.static('selections'));
+
 
 // Endpoint to get list of PDFs
 app.get('/api/pdfs', (req, res) => {
@@ -25,9 +28,15 @@ app.get('/api/pdfs', (req, res) => {
 });
 
 // Endpoint to get dropdown options for a PDF by ID
-app.get('/api/pdfs/:id/options', (req, res) => {
-  const pdfId = req.params.id;
-  db.all('SELECT * FROM dropdown_options WHERE pdf_id = ?', [pdfId], (err, rows) => {
+app.get('/api/selections', (req, res) => {
+  db.all('SELECT * FROM selections', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.get('/api/options', (req, res) => {
+  db.all('SELECT * FROM options', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });
