@@ -4,6 +4,9 @@
 }
 
                                                 /* Link Styling */
+a {
+    cursor: pointer;
+}
 a:link {
     color: black;
     text-decoration: none;
@@ -21,15 +24,6 @@ a:active {
     text-decoration: none;
 }
 
-                                                /* Button Styling */
-button {
-    background-color: #6eb236;
-    border: solid 1px;
-    text-decoration: none;
-    height: 50%;
-    width: 15%;
-    font-size: medium;
-}
 
                                                /* Main Screen Display */
 .Screen {
@@ -42,33 +36,20 @@ button {
 .SideBar {
     background-color: #6eb236;
     width: 16vw;
+    display: flex;
+    justify-content: center;
 }
 .MainView {
-    background-color: white;
+    background-color: rgb(243, 243, 243);
     width: 84vw;
     display: flex;
     flex-direction: column;
-    padding: 1%;
 }
 
                                                /* SideBar Separation - Pages and UploadNew */
 .Pages {
     height: 80%;
     font-size: larger;
-}
-
-.UploadNew {
-    height: 20%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-/* UploadNew Details */
-.UploadNew p {
-    border: solid black 1px;
-    padding: 5%;
-    font-size: medium;
-
 }
 
                                                /* Pages Separation - Logo, Dashboard, NewSchedule */
@@ -86,12 +67,13 @@ button {
 }
 
 .Dashboard {
-    border-top: solid black 1px;
-    border-bottom: solid black 1px;
     height: 10%;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-top: solid #5f9b2f 1px;
+    border-bottom: solid #5f9b2f 1px;
+    width: 14vw;
 }
 .Dashboard a {
     font-size: medium;
@@ -100,12 +82,30 @@ button {
     align-items: center;
     justify-content: center;
 }
+.Dashboard img {
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2%;
+}
+.Dashboard p {
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: large;
+    padding: 2%;
+}
 .NewSchedule {
-    border-bottom: solid black 1px;
     height: 10%;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: solid #5f9b2f 1px;
+    width: 14vw;
 }
 .NewSchedule a {
     font-size: medium;
@@ -114,7 +114,23 @@ button {
     align-items: center;
     justify-content: center;
 }
-
+.NewSchedule img {
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2%;
+}
+.NewSchedule p {
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: large;
+    padding: 2%;
+}
 .SideBar a {
     margin: 0;
     padding: 0;
@@ -122,29 +138,62 @@ button {
 
                                                /* MainView Separation - PDFBox and ButtonBox */
 .PDFBox {
-    background-color: white;
+    background-color: rgb(248, 248, 248);
     height: 85%;
-    margin: 1%;
+    width: 100%;
+    margin: 0px;
 }
-.ButtonBox {
-    background-color: white;
-    height: 15%;
+
+#pdfbox-title {
+    height: 12%;
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    padding-left: 1%;
-    padding-right: 1%;
+    justify-content: center;
+    background-color: white;
+}
+#pdfbox-title h2 {
+    width: 80%;
+    font-size: 150%;
+}
+
+#upload-new {
+    background: #6eb236;
+    border-radius: 5px;
+    width: 14%;
+    height: 60%;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+}
+
+#upload-new a {
+    cursor: pointer;
+}
+
+#upload-new p {
+    font-size: medium;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 #pdf-entry {
     height: 90%;
-    margin-top: 1%;
-    border-top: solid black 1px;
-    border-bottom: solid black 1px;
+    border-top: solid #dddddd 1px;
+    border-bottom: solid #dddddd 1px;
+}
+#pdf-entry p {
+    margin-left: 1%;
 }
 #pdf-header {
     display: flex;
     flex-direction: row;
     align-items: center;
+    background-color: white;
 }
 #pdf-header p {
     height: 2%;
@@ -154,7 +203,6 @@ button {
     color: grey;
     font-size: smaller;
 }
-
 #display-pdfs div {
     display: flex;
     flex-direction: row;
@@ -205,14 +253,16 @@ button {
     align-items: center;
     border-top: solid #dddddd 1px;
     background-color: #dddddd;
+    border-radius: 5px;
 }
 .popup {
     position: absolute;
     width: 82%;
-    height: 92%;
-    transform: translate(-1.2%, -84%);
+    height: 94.5%;
+    transform: translate(1%, -90%);
     background-color: white;
-    border: solid black 1px;
+    border: solid #dddddd 1px;
+    border-radius: 5px;
     visibility: hidden;
 }
 .popup.open {
@@ -327,7 +377,9 @@ button {
 #popup-body-notes input {
     height: 60%;
     width: 97%;
-    border: solid black 1px;
+    background-color: #f4f4f4;
+    border: none;
+    border-radius: 5px;
 }
 
 #popup-buttons {
@@ -340,11 +392,36 @@ button {
     height: 15%;
 }
 
+                                               /* Button CSS */
+.ButtonBox {
+    background-color: rgb(248, 248, 248);
+    height: 15%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-left: 3%;
+    padding-right: 3%;
+}
+
+button {
+    background-color: #6eb236;
+    padding: 1.5%;
+    padding-right: 4%;
+    padding-left: 4%;
+    font-size: medium;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
                                                /* New Schedule Specific CSS */
 .SchedulesBox {
     background-color: white;
     height: 85%;
-    margin: 1%;
+    width: 100%;
+    margin: 0px;
 }
 #schedule-list {
     height: 90%;

@@ -35,8 +35,15 @@ app.get('/api/selections', (req, res) => {
   });
 });
 
-app.get('/api/options', (req, res) => {
-  db.all('SELECT * FROM options', [], (err, rows) => {
+app.get('/api/unique_selections', (req, res) => {
+  db.all('SELECT DISTINCT field_name, type FROM selections', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
+  });
+});
+
+app.get('/api/mn-rules', (req, res) => {
+  db.all('SELECT type, field_name, in_mn FROM mn', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
   });

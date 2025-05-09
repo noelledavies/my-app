@@ -16,44 +16,47 @@
                 </div>
                 <a href="index.html">
                     <div class="Dashboard">
+                        <img src="images/excel.svg" alt="e2logo">
                         <p>Dashboard</p>
                     </div>
                 </a>
                 <a href="newsched.html">
                     <div class="NewSchedule">
+                        <img src="images/table.svg" alt="e2logo">
                         <p>Schedules</p>
                     </div>
                 </a>
 
             </div>
 
-            <a href="newspec.html">
-                <div class="UploadNew">
-                <p>+ Upload New Spec Sheet</p>
-                </div>
-            </a>
-
         </div>
         <div class="MainView">
 
-            <div class="SchedulesBox">
-                <h1>Schedules</h1>
-                <div id="schedule-list">
-                    <div id="schedule-header">
-                        <div id="name-header">
-                            <p>NAME</p>
-                        </div>
-                        <div id="date-header">
-                            <p>DATE</p>
-                        </div>
+            <div class="PDFBox">
+                <div id="pdfbox-title">
+                    <h2>Schedules</h2>
+                    <div id="upload-new">
+                        <a href="newspec.html">
+                            <div id="upload-new-border">
+                            <p>+ Upload Sheet</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div id="pdf-entry">
+                    <div id="pdf-header">
+                        <p>NAME</p>
+                        <p>PROJECT</p>
+                        <p>CREATED</p>
                     </div>
                     <div id="display-schedules">
                     </div>
                 </div>
+
             </div>
             <div class="ButtonBox">
-                <button id="delete_button">Delete Schedule</button>
-                <button id="export_button">Export to Excel</button>
+                <button id="open_button">Open</button>
+                <button id="edit_button">Edit Data</button>
             </div>
 
         </div>
