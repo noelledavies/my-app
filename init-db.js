@@ -46,9 +46,10 @@ db.serialize(() => {
       driver_req TEXT,
       dimensions TEXT,
       mounting_type TEXT,
-      luminaire_type
+      luminaire_type TEXT
     )
   `);// add value to table to associate with table containing schedules 
+
   // spare table creation 
   // db.run(`
   

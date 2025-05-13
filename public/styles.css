@@ -18,6 +18,7 @@ a:visited {
 a:hover {
     color: black;
     text-decoration: none;
+    cursor: pointer;
 }
 a:active {
     color: black;
@@ -66,7 +67,7 @@ a:active {
     justify-content: center;
 }
 
-.Dashboard {
+.Dashboard, .NewSchedule {
     height: 10%;
     display: flex;
     align-items: center;
@@ -75,21 +76,21 @@ a:active {
     border-bottom: solid #5f9b2f 1px;
     width: 14vw;
 }
-.Dashboard a {
+.Dashboard a, .NewSchedule a {
     font-size: medium;
     width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-.Dashboard img {
+.Dashboard img, .NewSchedule img {
     height: 30%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 2%;
 }
-.Dashboard p {
+.Dashboard p, .NewSchedule p {
     height: 40%;
     display: flex;
     align-items: center;
@@ -99,78 +100,55 @@ a:active {
     font-size: large;
     padding: 2%;
 }
-.NewSchedule {
-    height: 10%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-bottom: solid #5f9b2f 1px;
-    width: 14vw;
+
+.Dashboard:last-child {
+    border-bottom: none;
 }
-.NewSchedule a {
-    font-size: medium;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.NewSchedule img {
-    height: 30%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2%;
-}
-.NewSchedule p {
-    height: 40%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: large;
-    padding: 2%;
-}
+
+
 .SideBar a {
     margin: 0;
     padding: 0;
 }
 
-                                               /* MainView Separation - PDFBox and ButtonBox */
-.PDFBox {
+                                               /* MainView Separation - MainBox and ButtonBox */
+.MainBox {
     background-color: rgb(248, 248, 248);
     height: 85%;
     width: 100%;
     margin: 0px;
 }
 
-#pdfbox-title {
+#box-title {
     height: 12%;
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     background-color: white;
 }
-#pdfbox-title h2 {
-    width: 80%;
+#box-title h2 {
+    width: 40%;
     font-size: 150%;
+    margin-left: 3%;
 }
 
-#upload-new {
-    background: #6eb236;
-    border-radius: 5px;
-    width: 14%;
-    height: 60%;
+#box-title a {
     display: flex;
-    flex-wrap: nowrap;
     align-items: center;
     justify-content: center;
+    border-radius: 5px;
+    height: 60%;
+    margin-right: 3%;
+    background-color: #6eb236;
+    padding: 0.5%;
+    padding-right: 2%;
+    padding-left: 2%;
+    font-size: medium;
+    color: white;
+    font-weight: bold;
 }
 
-#upload-new a {
-    cursor: pointer;
-}
 
 #upload-new p {
     font-size: medium;
@@ -181,21 +159,21 @@ a:active {
     align-items: center;
     justify-content: center;
 }
-#pdf-entry {
+#pdf-entry, #schedule-entry, #data_entry {
     height: 90%;
     border-top: solid #dddddd 1px;
     border-bottom: solid #dddddd 1px;
 }
-#pdf-entry p {
+#pdf-entry p, #schedule-entry p {
     margin-left: 1%;
 }
-#pdf-header {
+#pdf-header, #schedule-header {
     display: flex;
     flex-direction: row;
     align-items: center;
     background-color: white;
 }
-#pdf-header p {
+#pdf-header p,  #schedule-header p{
     height: 2%;
     padding: 1%;
     padding-left: 2%;
@@ -203,13 +181,14 @@ a:active {
     color: grey;
     font-size: smaller;
 }
-#display-pdfs div {
+
+#display-pdfs div, #display-schedule div {
     display: flex;
     flex-direction: row;
     align-items: center;
     border-top: solid #dddddd 1px;
 }
-#display-pdfs p {
+#display-pdfs p, #display-schedule p {
     height: 2%;
     padding: 1%;
     width: 30%;    
@@ -306,7 +285,6 @@ a:active {
     font-size: smaller;
 
 }
-
 #popup-header-link a {
     padding: 0%;
     margin: 0%;
@@ -315,8 +293,7 @@ a:active {
     padding: 0%;
     margin: 0%;
 }
-
-#popup-header-link a:link {
+#p-header-link a:link {
     color: rgb(15, 15, 110);
     text-decoration: underline;
 }
@@ -336,14 +313,12 @@ a:active {
     font-size: large;
     color: black;
 }
-
 #popup-body {
     height: 68%;
     display: flex;
     flex-direction: column;
     padding: 2%;
 }
-
 #popup-body label {
     width: 100%;
     color: grey;
@@ -351,14 +326,12 @@ a:active {
     padding-bottom: 2%;
     text-transform: uppercase;
 }
-
 #popup-body-main {
     height: 80%;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
-
 #popup-body-main div {
     display: flex;
     flex-direction: column;
@@ -373,15 +346,16 @@ a:active {
 #popup-body-notes label {
     padding-bottom: 1%;
 }
-
-#popup-body-notes input {
+#popup-body-notes-textarea {
     height: 60%;
     width: 97%;
     background-color: #f4f4f4;
     border: none;
     border-radius: 5px;
+    font-size: medium;
+    max-width: 97%;
+    min-width: 97%;
 }
-
 #popup-buttons {
     display: flex;
     flex-direction: row;
@@ -417,37 +391,94 @@ button {
 }
 
                                                /* New Schedule Specific CSS */
-.SchedulesBox {
+
+#basic_info, #model_number_entry, #metadata_entry {
+    display: flex;
+    flex-direction: column;
+    height: 20%;
+    color: grey;
+    font-size: smaller;
     background-color: white;
+    border-bottom: solid #dddddd 1px;
+}
+
+#basic_info {
+    border-top: solid #dddddd 1px;
+}
+#basic_info p, #model_number_entry p, #metadata_entry p {
+    margin: 1%;
+    margin-left: 2%;
+}
+#basic_info_content {
+    display: flex;
+    flex-direction: row;
     height: 85%;
     width: 100%;
-    margin: 0px;
+    color: grey;
+    font-size: smaller;
 }
-#schedule-list {
-    height: 90%;
-    margin-top: 1%;
-    border-top: solid black 1px;
-    border-bottom: solid black 1px;
+#basic_info_content div {
+    margin: 2%;
+    width: 35%;
 }
-#schedule-header {
+#basic_input {
+    height: 60%;
+    width: 97%;
+    background-color: #f4f4f4;
+    border: none;
+    border-radius: 5px;
+    font-size: medium;
+}
+#basic_input_link {
+    background-color: transparent;
+    border: none;
+    color: inherit;
+    font-size: medium;
+}
+
+#model_number_entry, #metadata_entry {
+    height: 10%;
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
+    border-bottom: solid #dddddd 1px;
 }
 
-#name-header {
-    height: 2%;
-    padding: 1%;
-    padding-left: 2%;
-    width: 80%;
-    color: grey;
-    font-size: smaller;
+#new_spec_edit_button {
+    height: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 1%;
+    margin-right: 2%;
 }
-#date-header {
-    height: 2%;
-    padding: 1%;
-    padding-left: 2%;
-    width: 20%;
-    color: grey;
-    font-size: smaller;
+
+
+.editModelNum {
+    position: absolute;
+    width: 82%;
+    height: 94.5%;
+    transform: translate(1%, -45%);
+    background-color: white;
+    border: solid #dddddd 1px;
+    border-radius: 5px;
+    visibility: hidden;
+}
+.editModelNum.open {
+    visibility: visible;
+}
+
+.editMetaData {
+    position: absolute;
+    width: 82%;
+    height: 94.5%;
+    transform: translate(1%, -45%);
+    background-color: white;
+    border: solid #dddddd 1px;
+    border-radius: 5px;
+    visibility: hidden;
+}
+.editMetaData.open {
+    visibility: visible;
 }
