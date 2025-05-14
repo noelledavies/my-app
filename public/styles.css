@@ -421,8 +421,8 @@ button {
     margin: 2%;
     width: 35%;
 }
-#basic_input {
-    height: 60%;
+.basic_info input {
+    height: 50%;
     width: 97%;
     background-color: #f4f4f4;
     border: none;
@@ -445,7 +445,7 @@ button {
     border-bottom: solid #dddddd 1px;
 }
 
-#new_spec_edit_button {
+#new_spec_edit_mn, #new_spec_edit_md {
     height: 10%;
     display: flex;
     align-items: center;
@@ -481,4 +481,42 @@ button {
 }
 .editMetaData.open {
     visibility: visible;
+}
+.popup_header {
+    height: 3%;
+    color: grey;
+    font-size: large;
+    margin: 1%;
+}
+#popup_body_metadata {
+    height: 80%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.md {
+    height: 30%;
+    width: 30%;
+    margin: 1%;
+}
+.upper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2%;
+}
+.md input {
+    height: 15%;
+    width: 99.5%;
+    background-color: #f4f4f4;
+    border: none;
+    border-radius: 5px;
+    font-size: medium;
+}
+
+.option-list {
+    margin: 1%;
+    max-height: 60%;
+    overflow-y: auto;
 }

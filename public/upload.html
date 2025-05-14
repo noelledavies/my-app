@@ -39,15 +39,15 @@
                 <div id="basic_info">
                     <p>BASIC INFORMATION</p>
                     <div id="basic_info_content">
-                        <div id="basic_info_type">
+                        <div class="basic_info">
                             <p>TYPE</p>
-                            <input id="basic_input" type="text">
+                            <input id="type_input" type="text">
                         </div>
-                        <div id="basic_info_manu">
+                        <div class="basic_info">
                             <p>MANUFACTURER</p>
-                            <input id="basic_input" type="text">
+                            <input id="manu_input" type="text">
                         </div>
-                        <div id="basic_info_link">
+                        <div class="basic_info">
                             <p>LINK</p>
                             <input id="basic_input_link" type="file" name="img" accept="image/*">
                         </div>
@@ -57,18 +57,18 @@
 
                 <div id="model_number_entry">
                     <p>MODEL NUMBER</p>
-                    <button id="new_spec_edit_button">Edit</button>
+                    <button id="new_spec_edit_mn">Edit</button>
                 </div>
                 
                 <div id="metadata_entry">
                     <p>METADATA</p>
-                    <button id="new_spec_edit_button">Edit</button>
+                    <button id="new_spec_edit_md">Edit</button>
                 </div>
 
 
                 <div class="editModelNum" id="edit_mn">
-                    <div id="popup-header">
-                        
+                    <div class="popup_header">
+                        <p>mn</p>
                     </div>
                     <div id="popup-body">
                         
@@ -79,13 +79,59 @@
                     </div>
                 </div>
 
-                
+
                 <div class="editMetaData" id="edit_md">
-                    <div id="popup-header">
-                        
+                    <div class="popup_header">
+                        <p>METADATA</p>
                     </div>
-                    <div id="popup-body">
-                        
+                    <div id="popup_body_metadata">
+                        <div class="md" data-key="voltage">
+                            <div class="upper">
+                              <p>VOLTAGE REQUIREMENT</p>
+                              <button>Add Option</button>
+                            </div>
+                            <div class="option-list"></div>
+                            <input class="basic_input" type="text">
+                          </div>
+                        <div class="md" data-key="source">
+                            <div class="upper">
+                                <p>SOURCE</p>
+                                <button>Add Option</button>
+                            </div>
+                            <div class="option-list"></div>
+                            <input class="basic_input" type="text"></div>
+                        <div class="md" data-key="driver">
+                            <div class="upper">
+                                <p>DRIVER REQUIREMENT</p>
+                                <button>Add Option</button>
+                            </div>
+                            <div class="option-list"></div>
+                            <input class="basic_input" type="text">
+                        </div>
+                        <div class="md" data-key="dimensions">
+                            <div class="upper">
+                                <p>DIMENSIONS</p>
+                                <button>Add Option</button>
+                            </div>
+                            <div class="option-list"></div>
+                            <input class="basic_input" type="text">
+                        </div>
+                        <div class="md" data-key="mounting">
+                            <div class="upper">
+                                <p>MOUNTING TYPE</p>
+                                <button>Add Option</button>
+                            </div>
+                            <div class="option-list"></div>
+                            <input class="basic_input" type="text">
+                        </div>
+                        <div class="md" data-key="luminaire">
+                            <div class="upper">
+                                <p>LUMINAIRE TYPE</p>
+                                <button>Add Option</button>
+                            </div>
+                            <div class="option-list"></div>
+                            <input class="basic_input" type="text">
+                        </div>
                     </div>
                     <div id="popup-buttons">
                             <button id="exit_button_md">Exit</button>
