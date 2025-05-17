@@ -91,6 +91,50 @@ app.post('/api/entries', (req, res) => {
   });
 });
 
+app.post('/api/selections', (req, res) => {
+  const options = req.body;
+
+  const stmt = db.prepare(`
+    INSERT INTO selections (type, field_name, option_name, dependent)
+    VALUES (?, ?, ?, ?)
+  `);
+
+  db.serialize(() => {
+    db.run("BEGIN TRANSACTION");
+    for (const opt of options) {
+      stmt.run([opt.type, opt.field_name, opt.option_name, opt.dependent]);
+    }
+    db.run("COMMIT", err => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ status: "success", inserted: options.length });
+    });
+  });
+
+  stmt.finalize();
+});
+
+app.post('/api/pdfs', (req, res) => {
+  const options = req.body;
+
+  const stmt = db.prepare(`
+    INSERT INTO pdfs (type, spec_sheet, manufacturer)
+    VALUES (?, ?, ?)
+  `);
+
+  db.serialize(() => {
+    db.run("BEGIN TRANSACTION");
+    for (const opt of options) {
+      stmt.run([opt.type, opt.spec_sheet, opt.manufacturer]);
+    }
+    db.run("COMMIT", err => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ status: "success", inserted: options.length });
+    });
+  });
+
+  stmt.finalize();
+});
+
 app.get('/api/export-entries', (req, res) => {
   db.all('SELECT * FROM entries', [], (err, rows) => {
     if (err) {
