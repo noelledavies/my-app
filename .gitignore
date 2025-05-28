@@ -7,3 +7,6 @@ db.sqlite
 # Logs and temp files
 *.log
 *.tmp
+
+# Ignores pdf files 
+*.pdf
