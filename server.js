@@ -1,5 +1,8 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const multer = require('multer');
+const path = require('path');
+
 const XLSX = require('xlsx');
 const fs = require('fs');
 const app = express();
@@ -19,6 +22,29 @@ app.use('/pdfs', express.static('pdfs'));
 
 // Tells express to serve files from the pdfs/ folder at the /pdfs route
 //app.use('/selections', express.static('selections'));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/pdf_folder'); // or any folder you want
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
+// Route to handle PDF upload
+app.post('/upload-pdf', upload.single('specsheet'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+
+  // Send back the saved filename or path
+  res.json({ filePath: `/pdf_folder/${req.file.filename}` });
+});
+
+
 
 
 // Endpoint to get list of PDFs
@@ -154,6 +180,16 @@ app.get('/api/export-entries', (req, res) => {
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 
     res.send(buffer);
+  });
+});
+
+app.get('/api/check-pdf-exists', (req, res) => {
+  const { type } = req.query;
+  const query = `SELECT 1 FROM pdfs WHERE type = ? LIMIT 1`;
+
+  db.get(query, [type], (err, row) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ exists: !!row });
   });
 });
 

@@ -5,6 +5,8 @@ let flag = 0;
 const metadataOptions = {
     voltage: [],
     source: [],
+    lumen_level: [],
+    color_temp: [],
     driver: [],
     dimensions: [],
     mounting: [],
@@ -62,6 +64,7 @@ function addField() {
   field_name_input.type = "text";
   field_name_input.className = "field_name";
   field_name_input.placeholder = "Field Name";
+  field_name_input.dataset.label = "Field Name";
 
   add_field_btn.textContent = "Add Option";
 
@@ -70,6 +73,7 @@ function addField() {
   option_input.type = "text";
   option_input.className = "basic_input";
   option_input.placeholder = "Option";
+  option_input.dataset.label = "Option";
 
   remove_field_btn.textContent = "Remove Field";
   remove_field_btn.className = "remove_btn_field";
@@ -167,16 +171,36 @@ function clearAll() {
 }
 
 function checkAll() {
-  flag = 0;
-  document.querySelectorAll('input').forEach(input => {
-    if (!input.value) {
-      flag = 1;
+  let missingFields = [];
+
+  document.querySelectorAll('.md').forEach(md => {
+    const key = md.dataset.key || "Unnamed field";
+    const options = md.querySelectorAll('.option-list .option-item');
+
+    if (options.length === 0) {
+      // No options added to this field
+      const label = md.querySelector('.upper p')?.textContent.trim() || key;
+      missingFields.push(label);
     }
   });
-  if (flag != 1) {
+
+  if (missingFields.length === 0) {
     alert("Submitted.");
+    return true;
   } else {
-    alert("Missing field. Please review upload details.");
+    alert("Missing field(s):\n\n" + missingFields.join("\n"));
+    return false;
+  }
+}
+
+async function checkInDatabase(type) {
+  try {
+    const response = await fetch(`/api/check-pdf-exists?type=${encodeURIComponent(type)}`);
+    const data = await response.json();
+    return data.exists;
+  } catch (err) {
+    console.error("Fetch error:", err);
+    return false;
   }
 }
 
@@ -251,26 +275,76 @@ document.getElementById("add_field_btn").addEventListener("click", function() {
 
 document.querySelectorAll('.md').forEach(setupOptionEntry);
   
-document.getElementById("save_button").addEventListener("click", function() {
+document.getElementById("save_button").addEventListener("click", async function() {
   const type_value = document.getElementById("type_input").value.trim();
   const manufacturer = document.getElementById("manu_input").value.trim();
-  const link_path = document.getElementById("basic_input_link").value.trim();
-  let basics = [];
-  basics.push({
+  const fileInput = document.getElementById("basic_input_link");
+  const file = fileInput.files[0];
+  let filePath = null;
+
+  if (!type_value) {
+    alert("Please enter a valid type name.");
+    return;
+  }
+
+  if (!file) {
+    alert("Please select a PDF file.");
+    return;
+  }
+
+
+
+  const allFieldsFilled = checkAll();
+  if (!allFieldsFilled) return;
+
+
+  const exists = await checkInDatabase(type_value);
+  if (exists) {
+    alert("This type value already exists in the database. Please review your entry.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("specsheet", file); // 'specsheet' must match the multer field name
+
+  try {
+    const response = await fetch('/upload-pdf', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      
+      const errorText = await response.text(); // ✅ just this
+      console.error("Upload failed. Server said:", errorText);
+      throw new Error("Failed to upload PDF");
+
+    }
+    const data = await response.json();
+    console.log("PDF saved at:", data.filePath);
+    filePath = data.filePath;
+    // you can now save this `data.filePath` to your DB as the `spec_sheet` field
+    
+
+  } catch (err) {
+    console.error("Upload error:", err);
+  }
+
+  console.log(filePath);
+
+  const basics = [{
     type: type_value,
-    spec_sheet: link_path,
+    spec_sheet: filePath,
     manufacturer: manufacturer
-  });
+  }];
 
   fetch('/api/pdfs', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(basics)
   })
   .then(response => {
-    if (!response.ok) throw new Error("Failed to save metatdata");
+    if (!response.ok) throw new Error("Failed to save metadata");
     return response.json();
   })
   .then(data => {
@@ -280,17 +354,14 @@ document.getElementById("save_button").addEventListener("click", function() {
   .catch(err => {
     console.error("Error posting to DB:", err);
   });
-  
 
   fetch('/api/selections', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(rows)
   })
   .then(response => {
-    if (!response.ok) throw new Error("Failed to save basic info");
+    if (!response.ok) throw new Error("Failed to save selection info");
     return response.json();
   })
   .then(data => {
@@ -302,7 +373,4 @@ document.getElementById("save_button").addEventListener("click", function() {
   });
 
   clearAll();
-  checkAll();
-
-  // add it some kind of 1 submittion limit so multiple uploads can't occur
 });
