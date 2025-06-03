@@ -70,7 +70,7 @@ app.get('/api/unique_selections', (req, res) => {
   });
 });
 
-app.get('/api/mn-rules', (req, res) => {
+app.get('/api/in_mn', (req, res) => {
   db.all('SELECT type, field_name, in_mn FROM mn', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
@@ -123,6 +123,28 @@ app.post('/api/selections', (req, res) => {
   const stmt = db.prepare(`
     INSERT INTO selections (type, field_name, option_name, dependent)
     VALUES (?, ?, ?, ?)
+  `);
+
+  db.serialize(() => {
+    db.run("BEGIN TRANSACTION");
+    for (const opt of options) {
+      stmt.run([opt.type, opt.field_name, opt.option_name, opt.dependent]);
+    }
+    db.run("COMMIT", err => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ status: "success", inserted: options.length });
+    });
+  });
+
+  stmt.finalize();
+});
+
+app.post('/api/in_mn', (req, res) => {
+  const options = req.body;
+
+  const stmt = db.prepare(`
+    INSERT INTO mn (type, field_name, in_mn)
+    VALUES (?, ?, ?)
   `);
 
   db.serialize(() => {

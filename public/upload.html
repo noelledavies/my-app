@@ -69,10 +69,15 @@
                 <div class="editModelNum" id="edit_mn">
                     <div class="popup_header">
                         <p>MODEL NUMBER</p>
-                        <button id="add_field_btn">Add Field</button>
                     </div>
                     <div class="popup_body" id="field_location">
-                        
+                        <div id="field_section">
+
+                        </div>
+                        <div id="add_field">
+                            <input id="add_field_input" type="text">
+                            <button id="add_field_btn">Add Field</button>
+                        </div>
                     </div>
                     <div class="popup-buttons">
                             <button id="exit_button_mn">Exit</button>
@@ -86,101 +91,165 @@
                         <p>METADATA</p>
                     </div>
                     <div class="popup_body">
-                        <div class="md" data-key="voltage">
-                            <div class="upper">
-                              <p>VOLTAGE REQUIREMENT</p>
-                              <button>Add Option</button>
-                            </div>
-                            <div class="option-list">
-                                <!-- Attempt to take from MN -->
-                            </div>
-                            <input class="basic_input" type="text">
-                        </div>
                         <div class="md" data-key="source">
                             <div class="upper">
                                 <p>SOURCE</p>
-                                <button>Add Option</button>
                             </div>
-                            <div class="option-list">
-                                <p>Integrated LED</p>
-                                <p>LED Lamp</p>
+                            <div class="option_box">
+                                <div class="option-list">
+                                    <p class="options_header">OPTIONS</p>
+                                    <div class="option-item">
+                                        <p>Integrated LED</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>LED Lamp</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                </div>
+                                <div class="input_section">
+                                    <input class="basic_input" type="text">
+                                    <button>Add Option</button>
+                                </div>
                             </div>
-                            <input class="basic_input" type="text">
                         </div>
-                        <div class="md" data-key="lumen_level">
-                            <div class="upper">
-                              <p>LUMEN LEVEL</p>
-                              <button>Add Option</button>
-                            </div>
-                            <div class="option-list">
-                                <!-- Attempt to take from MN -->
-                            </div>
-                            <input class="basic_input" type="text">
-                        </div>
-                        <div class="md" data-key="color_temp">
-                            <div class="upper">
-                              <p>COLOR_TEMP</p>
-                              <button>Add Option</button>
-                            </div>
-                            <div class="option-list">
-                                <!-- Attempt to take from MN -->
-                            </div>
-                            <input class="basic_input" type="text">
-                        </div>
-                        <div class="md" data-key="driver">
+                        <div class="md" data-key="driver_requirements">
                             <div class="upper">
                                 <p>DRIVER REQUIREMENT</p>
-                                <button>Add Option</button>
                             </div>
-                            <div class="option-list">
-                                <p>0-10V Dimming</p>
-                                <p>Line Voltage Dimming</p>
-                                <p>Standard Non-Dimming</p>
-                                <p>Integrated In Lamp</p>
+                            <div class="option_box">
+                                <div class="option-list">
+                                    <p class="options_header">OPTIONS</p>
+                                    <div class="option-item">
+                                        <p>0-10V Dimming</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Line Voltage Dimming</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Standard Non-Dimming</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Integrated In Lamp</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                </div>
+                                <div class="input_section">
+                                    <input class="basic_input" type="text">
+                                    <button>Add Option</button>
+                                </div>
                             </div>
-                            <input class="basic_input" type="text">
                         </div>
                         <div class="md" data-key="dimensions">
                             <div class="upper">
                                 <p>DIMENSIONS</p>
-                                <button>Add Option</button>
                             </div>
-                            <div class="option-list"></div>
-                            <input class="basic_input" type="text">
+                            <div class="option_box">
+                                <div class="option-list">
+                                    <p class="options_header">OPTIONS</p>
+                                    <!-- Must Be Manually Entered -->
+                                </div>
+                                <div class="input_section">
+                                    <input class="basic_input" type="text">
+                                    <button>Add Option</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="md" data-key="mounting">
+                        <div class="md" data-key="mounting_type">
                             <div class="upper">
                                 <p>MOUNTING TYPE</p>
-                                <button>Add Option</button>
                             </div>
-                            <div class="option-list">
-                                <p>Surface</p>
-                                <p>Wall</p>
-                                <p>Suspended</p>
-                                <p>Recessed</p>
-                                <p>At Grade</p>
-                                <p>Mixed</p>
+                            <div class="option_box">
+                                <div class="option-list">
+                                    <p class="options_header">OPTIONS</p>
+                                    <div class="option-item">
+                                        <p>Surface</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Wall</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Suspended</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Recessed</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>At Grade</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Mixed</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                </div>
+                                <div class="input_section">
+                                    <input class="basic_input" type="text">
+                                    <button>Add Option</button>
+                                </div>
                             </div>
-                            <input class="basic_input" type="text">
+                            
                         </div>
-                        <div class="md" data-key="luminaire">
+                        <div class="md" data-key="luminaire_type">
                             <div class="upper">
                                 <p>LUMINAIRE TYPE</p>
-                                <button>Add Option</button>
                             </div>
-                            <div class="option-list">
-                                <p>Linear Luminaire</p>
-                                <p>Linear Wrap Luminaire</p>
-                                <p>Vanity Luminaire</p>
-                                <p>Volumetric Luminaire</p>
-                                <p>Flat Panel Luminaire</p>
-                                <p>Wafer Downlight Luminaire</p>
-                                <p>Downlight Luminaire</p>
-                                <p>Sconce Luminaire</p>
-                                <p>Uplight Luminaire</p>
-                                <p>Area/Flood Luminaire</p>
+                            <div class="option_box">
+                                <div class="option-list">
+                                    <p class="options_header">OPTIONS</p>
+                                    <div class="option-item">
+                                        <p>Linear Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Linear Wrap Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Vanity Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Volumetric Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Flat Panel Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Wafer Downlight Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Downlight Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Sconce Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Uplight Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                    <div class="option-item">
+                                        <p>Area/Flood Luminaire</p>
+                                        <button class="remove_btn">-</button>
+                                    </div>
+                                </div>
+                                <div class="input_section">
+                                    <input class="basic_input" type="text">
+                                    <button>Add Option</button>
+                                </div>
                             </div>
-                            <input class="basic_input" type="text">
                         </div>
                     </div>
                     <div class="popup-buttons">
@@ -190,7 +259,7 @@
                 </div>
             </div>
             <div class="ButtonBox">
-                <button id="exit_button">Exit</button>
+                <button id="exit_upload_button">Exit</button>
                 <button id="save_button">Save</button>
             </div>
         </div>

@@ -7,7 +7,7 @@ const displayPDFdetails = document.getElementById('popup-body-main');
 
 let selectedDiv = null;
 let popup = document.getElementById('popup');
-let mn_rules = [];
+
 
 
 // FUNCTIONS
@@ -21,29 +21,7 @@ Returns: none
 Description: updates the model number string with current .values of each select element with in_mn set to 1
 */
 function updateModelNumber() {
-  // variables
-  const allSelections = document.querySelectorAll('#popup-body-main select.selection');
-  const type = selectedDiv?.dataset.type;
-  let modelNumberParts = [];
-
-  // iterate through select elements
-  for (let select of allSelections) {
-    // variables
-    const label = select.previousElementSibling?.textContent.trim();
-    const val = select.value;
-    const rule = mnRules.find(rule => rule.type === type && rule.field_name === label);
-
-    // check if qualfies
-    if (val && val !== "null" && rule && rule.in_mn === 1) {
-      modelNumberParts.push(val);
-    }
-  }
-
-  // seperater
-  const modelNumber = modelNumberParts.join('-');
-
-  // update document with new model number
-  document.getElementById('mn').textContent = modelNumber;
+  
 }
 
 
@@ -141,7 +119,7 @@ function exportEntry() {
     }
   }
 
-  // seperater
+  // separater
   const modelNumber = modelNumberParts.join('-');
 
   exportArray.push(modelNumber);
@@ -229,11 +207,12 @@ fetch('/api/pdfs')
 
 
 
-
   // popup functions
   function openPopup(selectedDiv) {
 
     popup.classList.add("open");
+
+    let currentSelections = {};
 
     document.getElementById('popup-body-main').innerHTML = '';
 
@@ -261,137 +240,156 @@ fetch('/api/pdfs')
     display_lk.target = '_blank';
     display_lk.className = "pdf_in_use";
     lk.appendChild(display_lk);
+    
+    let voltage_flag = 0;
+    let lumens_flag = 0;
+    let color_flag = 0;
 
-    let seriesSelect = null;
-    let lumensSelect = null;
-    let lumen_levelSelect = null;
-    let color_temp_kSelect = null;
-    let color_tempSelect = null;
+    function getVoltage() {
+      const labels = document.querySelectorAll('#popup-body-main label');
+      labels.forEach(label => {
+        if (label.textContent.trim().toLowerCase() === 'voltage') {
+          const select = label.nextElementSibling;
+          if (select && select.tagName === 'SELECT') {
+            const voltageValue = select.value;
 
-    fetch('/api/mn-rules')
+            const voltageReqP = document.querySelector('[data-field="voltage"]');
+            if (voltageReqP) {
+              voltageReqP.textContent = voltageValue;
+            }
+          }
+        }
+      });
+    }
+
+    function getLumens() {
+      const labels = document.querySelectorAll('#popup-body-main label');
+      labels.forEach(label => {
+        if (label.textContent.trim().toLowerCase() === 'lumens') {
+          const select = label.nextElementSibling;
+          if (select && select.tagName === 'SELECT') {
+            const lumensValue = select.value;
+
+            const lumensLevP = document.querySelector('[data-field="lumens"]');
+            if (lumensLevP) {
+              lumensLevP.textContent = convertLumenValue(lumensValue);
+            }
+          }
+        }
+      });
+    }
+
+    function getColor() {
+      const labels = document.querySelectorAll('#popup-body-main label');
+      labels.forEach(label => {
+        if (label.textContent.trim().toLowerCase() === 'color temperature' || label.textContent.trim().toLowerCase() === 'color_temp') {
+          const select = label.nextElementSibling;
+          if (select && select.tagName === 'SELECT') {
+            const colorValue = select.value;
+
+            const colorTempP = document.querySelector('[data-field="color temperature"]');
+            if (colorTempP) {
+              colorTempP.textContent = convertColorTempValue(colorValue);
+            }
+          }
+        }
+      });
+    }
+
+    function buildBox(title, p, fieldKey = "") {
+      const display_div = document.createElement('div');
+      const display_label = document.createElement('label');
+      display_label.textContent = title;
+      display_div.appendChild(display_label);
+
+      if(p === true) {
+        const display_p = document.createElement('p');
+        if (fieldKey) display_p.setAttribute('data-field', fieldKey);
+        display_div.appendChild(display_p);
+      } else {
+        const display_input = document.createElement('input');
+        display_input.type = "text";
+        display_div.appendChild(display_input);
+      }
+
+      displayPDFdetails.appendChild(display_div);
+    }
+
+    fetch('/api/unique_selections')
     .then(res => res.json())
-    .then(rules => {
-      mnRules = rules;
-
-      fetch('/api/unique_selections')
-      .then(res => res.json())
-      .then(selections => {
+    .then(selections => {
+      fetch('/api/selections')
+        .then(res => res.json())
+        .then(options => {
           selections.forEach(sel => {
-              if (sel.type == selectedDiv.dataset.type) {
-                  const display_div = document.createElement('div');
-                  const display_label = document.createElement('label');
-                  display_label.textContent = sel.field_name;
-                  display_div.appendChild(display_label);
+            if (sel.type === selectedDiv.dataset.type) {
+              const display_div = document.createElement('div');
+              const display_label = document.createElement('label');
+              display_label.textContent = sel.field_name;
+              display_div.appendChild(display_label);
 
-                  const display_select = document.createElement('select');
-                  display_select.textContent = sel.field_name;
-                  display_select.classList.add('selection');
-                  display_div.appendChild(display_select);
+              const display_select = document.createElement('select');
+              display_select.classList.add('selection');
+              display_div.appendChild(display_select);
 
-                  fetch('/api/selections')
-                  .then(res => res.json())
-                  .then(options => {
-          
-                      // First pass: build selects and keep references
-                      options.forEach(opt => {
-                          if (opt.field_name == sel.field_name) {
-                            // non dependent
-                              if (sel.field_name == "series") {
-                              seriesSelect = display_select;
-                              }
-                              if (sel.field_name == "color_temp") {
-                                color_tempSelect = display_select;
-                              }
-                              // dependent
-                              if (sel.field_name == "lumens") {
-                              lumensSelect = display_select;
-                              }
-                              if (sel.field_name == "lumen_level") {
-                                lumen_levelSelect = display_select;
-                              }
-                              if (sel.field_name == "color_temp_k") {
-                                color_temp_kSelect = display_select;
-                              }
-
-                              // Add non-dependent fields (or all for now, and filter later)
-                              if (sel.field_name != "lumens" || sel.field_name != "lumen_level" || sel.field_name != "color_temp_k") {
-                              const new_opt = document.createElement('option');
-                              new_opt.textContent = opt.option_name;
-                              new_opt.value = opt.option_name;
-                              display_select.appendChild(new_opt);
-                              }
-                          }
-                      });
-
-                      // After all selects are created and attached
-                      if (seriesSelect && lumensSelect && lumen_levelSelect && color_temp_kSelect && color_tempSelect) {
-                      const updateLumensOptions = () => {
-
-                          // Clear existing lumens options
-                          lumensSelect.innerHTML = '';
-
-                          const selectedSeries = seriesSelect.value;
-
-                          options.forEach(opt => {
-                          if (opt.field_name == "lumens") {
-                              if (!opt.dependent || opt.dependent === selectedSeries) {
-                              const new_opt = document.createElement('option');
-                              new_opt.textContent = opt.option_name;
-                              new_opt.value = opt.option_name;
-                              lumensSelect.appendChild(new_opt);
-                              }
-                          }
-                          
-                      });
-                      
-                      updateModelNumber();
-                  };
-                  const updateLumenLevelOptions = () => {
-
-                    // Clear existing lumens options
-                    lumen_levelSelect.innerHTML = '';
-
-                    const lumens_val = document.createElement('option');
-                    lumens_val.textContent = convertLumenValue(lumensSelect.value);
-                    lumens_val.value = convertLumenValue(lumensSelect.value);
-                    lumen_levelSelect.appendChild(lumens_val);
-                  };
-                  const updateColorTempKOptions = () => {
-
-                    // Clear existing lumens options
-                    color_temp_kSelect.innerHTML = '';
-
-                    const color_temp_val = document.createElement('option');
-                    color_temp_val.textContent = convertColorTempValue(color_tempSelect.value);
-                    color_temp_val.value = convertColorTempValue(color_tempSelect.value);
-                    color_temp_kSelect.appendChild(color_temp_val);
-                  };
-
-                  // Initial populate
-                  updateLumensOptions();
-                  updateLumenLevelOptions();
-                  updateColorTempKOptions();
-
-                  // When series changes, update lumens options
-                  seriesSelect.addEventListener('change', () => {
-                      updateLumensOptions();
-                  });
-                  lumensSelect.addEventListener('change', () => {
-                    updateLumenLevelOptions();
-                  });
-                  color_tempSelect.addEventListener('change', () => {
-                    updateColorTempKOptions();
-                  });
-                }
-                display_select.addEventListener('change', updateModelNumber);
-                updateModelNumber();
+              // Filter once, then add options
+              const matchingOptions = options.filter(opt =>
+                opt.field_name === sel.field_name && opt.type === selectedDiv.dataset.type
+              );
+              matchingOptions.forEach(opt => {
+                const new_opt = document.createElement('option');
+                new_opt.textContent = opt.option_name;
+                new_opt.value = opt.option_name;
+                display_select.appendChild(new_opt);
               });
+
+
+              display_select.addEventListener('change', updateModelNumber);
               displayPDFdetails.appendChild(display_div);
-            }   
+
+              if (sel.field_name.trim().toLowerCase() == "voltage") {
+                voltage_flag = 1;
+                display_select.addEventListener('change', getVoltage);
+              }
+              if (sel.field_name.trim().toLowerCase() == "lumens") {
+                lumens_flag = 1;
+                display_select.addEventListener('change', getLumens);
+              }
+              if (sel.field_name.trim().toLowerCase() == "color temperature" || sel.field_name.trim().toLowerCase() == "color_temp" ) {
+                color_flag = 1;
+                display_select.addEventListener('change', getColor);
+              }
+            }
           });
+          if (voltage_flag == 1) {
+            buildBox("VOLTAGE REQUIREMENT", true, "voltage");
+            getVoltage();
+          } else {
+            buildBox("VOLTAGE REQUIREMENT", false);
+          }
+
+          if (lumens_flag == 1) {
+            buildBox("LUMEN LEVEL", true, "lumens");
+            getLumens();
+          } else {
+            buildBox("LUMEN LEVEL", false);
+          }
+
+          if (color_flag == 1) {
+            buildBox("COLOR TEMPERATURE", true, "color temperature");
+            getColor();
+          } else {
+            buildBox("COLOR TEMPERATURE", false);
+          }
         });
       });
-  }
+
+      // add to schedule listener
+      document.getElementById("add_button").addEventListener("click", function() {
+        closePopup();
+        exportEntry();
+      });
+    }
 
 
 
@@ -408,11 +406,4 @@ fetch('/api/pdfs')
   // close pdf selection listener
   document.getElementById("exit_button").addEventListener("click", function() {
     closePopup();
-  });
-
-  // add to schedule listener
-  document.getElementById("add_button").addEventListener("click", function() {
-    closePopup();
-    exportEntry();
-    // also do other things
   });

@@ -188,7 +188,7 @@ db.serialize(() => {
     ('FA.pdf', 'series', 1), 
     ('FA.pdf','lumens', 1), 
     ('FA.pdf','lens', 1),   
-    ('FA.pdf','voltage', 0), 
+    ('FA.pdf','voltage', 1), 
     ('FA.pdf','driver', 1), 
     ('FA.pdf','color_temp', 1), 
     ('FA.pdf','light_interface', 1), 

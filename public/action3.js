@@ -1,18 +1,17 @@
 let popup = document.getElementById('edit_mn');
 let add_field = document.getElementById('field_location');
 let flag = 0;
+
 // Store category-wise arrays
 const metadataOptions = {
-    voltage: [],
     source: [],
-    lumen_level: [],
-    color_temp: [],
-    driver: [],
+    driver_requirements: [],
     dimensions: [],
-    mounting: [],
-    luminaire: []
+    mounting_type: [],
+    luminaire_type: []
   };
-let rows = [];
+let selection_rows = [];
+let mn_rows = [];
 
 /* 
 Function: openPopup
@@ -37,7 +36,11 @@ Returns: none
 Description: closes the currently open popup by removing the "open" class
 */
 function closePopup() {
-    popup.classList.remove("open");
+  document.querySelectorAll('.option_box').forEach(box => {
+    box.style.visibility = 'hidden';
+  });
+
+  popup.classList.remove("open");
 }
 
 /* 
@@ -50,107 +53,127 @@ Returns: none
 Description: creates new div, filed_name entry, and options entry
 */
 function addField() {
-  const field_div = document.createElement('div');
-  const upper_div = document.createElement('div');
-  const field_name_input = document.createElement('input');
-  const add_field_btn = document.createElement('button');
-  const options_div = document.createElement('div');
-  const option_input = document.createElement('input');
-  const remove_field_btn = document.createElement('button');
 
-  field_div.className = "md";
+  const check_valid = document.getElementById("add_field_input");
+  if (!check_valid.value) {
+    alert("Please enter a name for the field.")
+    return;
+  }
+
+  const duplicate = Array.from(document.querySelectorAll('.md')).some(el => {
+    return el.dataset.key?.trim().toLowerCase() === check_valid.value.trim().toLowerCase();
+  });
+
+  if (duplicate) {
+    alert("A field with that name already exists.");
+    return;
+  }
+
+  const field_section = document.getElementById("field_section");
+
+  const md_div = document.createElement('div');
+  md_div.className = "md";
+  md_div.dataset.key = check_valid.value.trim().toLowerCase();
+
+  const upper_div = document.createElement('div');
   upper_div.className = "upper";
 
-  field_name_input.type = "text";
-  field_name_input.className = "field_name";
-  field_name_input.placeholder = "Field Name";
-  field_name_input.dataset.label = "Field Name";
+  const upper_heading = document.createElement('p');
+  upper_heading.textContent = check_valid.value.trim().toUpperCase();;
 
-  add_field_btn.textContent = "Add Option";
+  const option_div = document.createElement('div');
+  option_div.className = "option_box";
 
-  options_div.className = "option-list";
+  const option_list_div = document.createElement('div');
+  option_list_div.className = "option-list";
 
-  option_input.type = "text";
-  option_input.className = "basic_input";
-  option_input.placeholder = "Option";
-  option_input.dataset.label = "Option";
+  const options_header = document.createElement('p');
+  options_header.className = "options_header";
+  options_header.textContent = "OPTIONS";
 
-  remove_field_btn.textContent = "Remove Field";
-  remove_field_btn.className = "remove_btn_field";
+  const input_div = document.createElement('div');
+  input_div.className = "input_section";
 
-  remove_field_btn.addEventListener("click", (e) => {
-    e.stopPropagation(); // important if you ever nest clickable things
-    field_div.remove();
+  const input_field = document.createElement('input');
+  input_field.className = "basic_input";
+  input_field.type = "text";
+
+  const option_button = document.createElement('button');
+  option_button.textContent = "Add Option";
+
+  option_list_div.appendChild(options_header);
+  input_div.appendChild(input_field);
+  input_div.appendChild(option_button);
+
+  option_div.appendChild(option_list_div);
+  option_div.appendChild(input_div);
+
+  upper_div.appendChild(upper_heading);
+
+  md_div.appendChild(upper_div);
+  md_div.appendChild(option_div);
+
+  md_div.addEventListener('click', (e) => {
+     e.preventDefault();
+
   });
 
-  upper_div.appendChild(field_name_input);
-  upper_div.appendChild(add_field_btn);
+  field_section.appendChild(md_div);
 
+  check_valid.value = '';
 
-  field_div.appendChild(upper_div);
-  field_div.appendChild(options_div);
-  field_div.appendChild(option_input);
-  field_div.appendChild(remove_field_btn);
-
-  add_field.appendChild(field_div);
-
-  field_name_input.addEventListener("blur", () => {
-    const key = field_name_input.value.trim();
-    
-    if (key) {
-      field_div.dataset.key = key;
-      if (!metadataOptions[key]) {
-        metadataOptions[key] = [];
-      }
-
-      setupOptionEntry(field_div);
-    }
-  });
+  setupOptionEntry(md_div); 
 }
 
 function setupOptionEntry(group) {
   const input = group.querySelector('input.basic_input');
   const button = group.querySelector('button');
   const listDiv = group.querySelector('.option-list');
+  const key = group.dataset.key;
+
+  // Ensure the metadataOptions entry exists
+  if (!metadataOptions[key]) {
+    metadataOptions[key] = [];
+  }
 
   function addOption() {
-    const key = group.dataset.key;
+    const value = input.value.trim();
     
-    if (!key) {
-      alert("Please enter a field name first!");
-      input.focus();
+    if (!value) return;
+
+    // Prevent duplicates
+    if (metadataOptions[key].includes(value)) {
+      alert("This option already exists.");
+      input.value = '';
       return;
     }
 
-    const value = input.value.trim();
-    if (value && !metadataOptions[key].includes(value)) {
-      metadataOptions[key].push(value);
+    metadataOptions[key].push(value);
 
-      const optionWrapper = document.createElement('div');
-      optionWrapper.className = 'option-item';
+    const optionWrapper = document.createElement('div');
+    optionWrapper.className = 'option-item';
 
-      const p = document.createElement('p');
-      p.textContent = value;
+    const p = document.createElement('p');
+    p.textContent = value;
 
-      const b = document.createElement('button');
-      b.textContent = '-';
-      b.className = 'remove_btn';
+    const b = document.createElement('button');
+    b.textContent = '-';
+    b.className = 'remove_btn';
 
-      optionWrapper.appendChild(p);
-      optionWrapper.appendChild(b);
-      listDiv.appendChild(optionWrapper);
+    optionWrapper.appendChild(p);
+    optionWrapper.appendChild(b);
+    listDiv.appendChild(optionWrapper);
 
-      input.value = '';
+    input.value = '';
 
-      b.addEventListener('click', (e) => {
-        optionWrapper.remove();
+    b.addEventListener('click', () => {
+      optionWrapper.remove();
 
-        const index = metadataOptions[key].indexOf(value);
-        if (index > -1) {
-          metadataOptions[key].splice(index, 1);
-        }
-      });
-    }
+      const index = metadataOptions[key].indexOf(value);
+      if (index > -1) {
+        metadataOptions[key].splice(index, 1);
+      }
+    });
   }
 
   button.addEventListener('click', addOption);
@@ -161,6 +184,7 @@ function setupOptionEntry(group) {
     }
   });
 }
+
 
 function clearAll() {
   document.querySelectorAll('input').forEach(input => {
@@ -185,7 +209,6 @@ function checkAll() {
   });
 
   if (missingFields.length === 0) {
-    alert("Submitted.");
     return true;
   } else {
     alert("Missing field(s):\n\n" + missingFields.join("\n"));
@@ -224,60 +247,78 @@ document.getElementById("exit_button_md").addEventListener("click", function() {
 });
 
 document.getElementById("done_button_md").addEventListener("click", function() {
-    const type_value = document.getElementById("type_input").value.trim();
-    // save data to db
-    for (const key in metadataOptions) {
-        metadataOptions[key].forEach(value => {
-          rows.push({
-            type: type_value,
-            field_name: key,
-            option_name: value,
-            dependent: null
-          });
-        });
-    }
     closePopup();
 });
 
 
+document.getElementById('edit_mn').addEventListener('click', function (e) {
+  const clickedBox = e.target.closest('.md');
+  if (!clickedBox) return;
+
+  document.querySelectorAll('.md').forEach(box => {
+    box.style.border = 'none'; // or the original border if you had one
+    box.style.width = '40%';   // reset to original width
+  });
+
+  // Hide all option boxes
+  document.querySelectorAll('.option_box').forEach(box => {
+    box.style.visibility = 'hidden';
+  });
+
+  // Show the clicked box's option box
+  const optionBox = clickedBox.querySelector('.option_box');
+  if (optionBox) {
+    optionBox.style.visibility = 'visible';
+    clickedBox.style.border = 'solid #6eb236 1px';
+    clickedBox.style.width = '44%';
+  }
+});
+
+
+
+
+document.getElementById('edit_md').addEventListener('click', function (e) {
+  const clickedBox = e.target.closest('.md');
+  if (!clickedBox) return;
+
+  document.querySelectorAll('.md').forEach(box => {
+    box.style.border = 'none'; // or the original border if you had one
+    box.style.width = '40%';   // reset to original width
+  });
+
+  // Hide all option boxes
+  document.querySelectorAll('.option_box').forEach(box => {
+    box.style.visibility = 'hidden';
+  });
+
+  // Show the clicked box's option box
+  const optionBox = clickedBox.querySelector('.option_box');
+  if (optionBox) {
+    optionBox.style.visibility = 'visible';
+    clickedBox.style.border = 'solid #6eb236 1px';
+    clickedBox.style.width = '44%';
+  }
+});
 
 document.getElementById("done_button_mn").addEventListener("click", function() {
-  const type_value = document.getElementById("type_input").value.trim();
-  const field_divs = document.querySelectorAll('#field_location .md');
-
-  const model_number_options = {};
-  
-  field_divs.forEach( field =>  {
-    const key = field.dataset.key;
-    const option_elements = field.querySelectorAll('.option-list p');
-
-    if (key) {
-      model_number_options[key] = [];
-      option_elements.forEach(p => {
-        const value = p.textContent.trim();
-        if (value) {
-          rows.push({
-            type: type_value,
-            field_name: key,
-            option_name: value,
-            dependent: null // or some other value if needed
-          });
-        }
-      });
-    }
-  });
   closePopup();
 });
+
 
 document.getElementById("add_field_btn").addEventListener("click", function() {
   addField();
 });
+document.getElementById("add_field_input").addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      addField();
+    }
+  });
 
 document.querySelectorAll('.md').forEach(setupOptionEntry);
   
 document.getElementById("save_button").addEventListener("click", async function() {
   const type_value = document.getElementById("type_input").value.trim();
-  const manufacturer = document.getElementById("manu_input").value.trim();
+  const manufacturer = document.getElementById("manu_input").value.trim().toUpperCase();
   const fileInput = document.getElementById("basic_input_link");
   const file = fileInput.files[0];
   let filePath = null;
@@ -287,22 +328,24 @@ document.getElementById("save_button").addEventListener("click", async function(
     return;
   }
 
+  if (!manufacturer) {
+    alert("Please enter a valid manufacturer name.");
+    return;
+  }
+
   if (!file) {
     alert("Please select a PDF file.");
     return;
   }
-
-
-
-  const allFieldsFilled = checkAll();
-  if (!allFieldsFilled) return;
-
 
   const exists = await checkInDatabase(type_value);
   if (exists) {
     alert("This type value already exists in the database. Please review your entry.");
     return;
   }
+
+  const allFieldsFilled = checkAll();
+  if (!allFieldsFilled) return;
 
   const formData = new FormData();
   formData.append("specsheet", file); // 'specsheet' must match the multer field name
@@ -314,8 +357,7 @@ document.getElementById("save_button").addEventListener("click", async function(
     });
 
     if (!response.ok) {
-      
-      const errorText = await response.text(); // ✅ just this
+      const errorText = await response.text();
       console.error("Upload failed. Server said:", errorText);
       throw new Error("Failed to upload PDF");
 
@@ -323,14 +365,9 @@ document.getElementById("save_button").addEventListener("click", async function(
     const data = await response.json();
     console.log("PDF saved at:", data.filePath);
     filePath = data.filePath;
-    // you can now save this `data.filePath` to your DB as the `spec_sheet` field
-    
-
   } catch (err) {
     console.error("Upload error:", err);
   }
-
-  console.log(filePath);
 
   const basics = [{
     type: type_value,
@@ -355,10 +392,41 @@ document.getElementById("save_button").addEventListener("click", async function(
     console.error("Error posting to DB:", err);
   });
 
+  selection_rows = [];
+  mn_rows = [];
+
+  const field_divs = document.querySelectorAll('.md');
+  field_divs.forEach(field => {
+  const key = field.dataset.key;
+  const option_elements = field.querySelectorAll('.option-list .option-item p');
+
+  if (key) {
+    const in_mn_value = document.getElementById('edit_mn').classList.contains('open') ? 1 : 0;
+
+    option_elements.forEach(p => {
+      const value = p.textContent.trim().toUpperCase();
+      if (value) {
+        selection_rows.push({
+          type: type_value,
+          field_name: key.toUpperCase(),
+          option_name: value,
+          dependent: null
+        });
+      }
+    });
+
+    mn_rows.push({
+      type: type_value,
+      field_name: key.toUpperCase(),
+      in_mn: in_mn_value
+    });
+  }
+});
+
   fetch('/api/selections', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(rows)
+    body: JSON.stringify(selection_rows)
   })
   .then(response => {
     if (!response.ok) throw new Error("Failed to save selection info");
@@ -372,5 +440,27 @@ document.getElementById("save_button").addEventListener("click", async function(
     console.error("Error posting to DB:", err);
   });
 
+  fetch('/api/in_mn', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(mn_rows)
+  })
+  .then(response => {
+    if (!response.ok) throw new Error("Failed to save selection info");
+    return response.json();
+  })
+  .then(data => {
+    console.log("Saved to DB:", data);
+    closePopup();
+  })
+  .catch(err => {
+    console.error("Error posting to DB:", err);
+  });
+
+  alert("Submitted.");
   clearAll();
+});
+
+document.getElementById('exit_upload_button').addEventListener('click', function () {
+  window.location.href = 'index.html';
 });
