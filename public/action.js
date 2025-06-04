@@ -4,6 +4,8 @@ const pdfSelect = document.getElementById('pdf-select');
 const optionsSelect = document.getElementById('options-select');
 const displayPDF = document.getElementById('display-pdfs');
 const displayPDFdetails = document.getElementById('popup-body-main');
+let curValueSet = [];
+let curOptions = [];
 
 let selectedDiv = null;
 let popup = document.getElementById('popup');
@@ -21,7 +23,8 @@ Returns: none
 Description: updates the model number string with current .values of each select element with in_mn set to 1
 */
 function updateModelNumber() {
-  
+  const mn_update = document.getElementById("mn");
+  mn_update.textContent = curValueSet.join('-');
 }
 
 
@@ -315,6 +318,34 @@ fetch('/api/pdfs')
       displayPDFdetails.appendChild(display_div);
     }
 
+    function updateCurrentValueSet() {
+      curValueSet.length = 0;
+      document.querySelectorAll('.selection').forEach(sel => {
+        curValueSet.push(sel.value);
+      });
+    }
+
+    function updateRestrictions() {
+      
+      curOptions.forEach(opt => {
+        if (curValueSet.includes(opt.dependent)) {
+          const labels = document.querySelectorAll('#popup-body-main label');
+          labels.forEach(label => {
+            if (label.textContent.trim().toLowerCase() === opt.field_name) {
+              const select = label.nextElementSibling;
+              if (select && select.tagName === 'SELECT') {
+                console.log("This doesn't work right now."); 
+                // need to find a way to make the dependencies generalized such 
+                // that if multiplke exist they are all handled properly. This current 
+                // implementation would only work for one being lumens and it is very 
+                // resource intensive imo.
+              }
+            }
+          });
+        }
+      });
+    }
+
     fetch('/api/unique_selections')
     .then(res => res.json())
     .then(selections => {
@@ -332,11 +363,18 @@ fetch('/api/pdfs')
               display_select.classList.add('selection');
               display_div.appendChild(display_select);
 
+              display_select.addEventListener('change', function () {
+                updateCurrentValueSet();
+                updateRestrictions();
+              });
+
               // Filter once, then add options
+
               const matchingOptions = options.filter(opt =>
                 opt.field_name === sel.field_name && opt.type === selectedDiv.dataset.type
               );
               matchingOptions.forEach(opt => {
+                curOptions.push(opt);
                 const new_opt = document.createElement('option');
                 new_opt.textContent = opt.option_name;
                 new_opt.value = opt.option_name;
@@ -361,6 +399,11 @@ fetch('/api/pdfs')
               }
             }
           });
+
+          updateCurrentValueSet();
+          updateRestrictions();
+          updateModelNumber();
+
           if (voltage_flag == 1) {
             buildBox("VOLTAGE REQUIREMENT", true, "voltage");
             getVoltage();
@@ -398,7 +441,6 @@ fetch('/api/pdfs')
   document.getElementById("open_button").addEventListener("click", function() {
     if (selectedDiv) {
         openPopup(selectedDiv);
-
     } else {
         alert("Please select a PDF.")
     }
