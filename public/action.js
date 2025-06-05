@@ -1,4 +1,5 @@
 
+
 // GLOBAL VARIABLES
 const pdfSelect = document.getElementById('pdf-select');
 const optionsSelect = document.getElementById('options-select');
@@ -225,7 +226,7 @@ fetch('/api/pdfs')
 
     const mn = document.getElementById("popup-header-mn");
     const display_mn = document.createElement('p');
-    display_mn.textContent = "________________________";
+    display_mn.textContent = "------------------------";
     display_mn.id = "mn";
     display_mn.className = "pdf_in_use";
     mn.appendChild(display_mn);
@@ -269,15 +270,24 @@ fetch('/api/pdfs')
       const labels = document.querySelectorAll('#popup-body-main label');
       labels.forEach(label => {
         if (label.textContent.trim().toLowerCase() === 'lumens') {
-          const select = label.nextElementSibling;
-          if (select && select.tagName === 'SELECT') {
-            const lumensValue = select.value;
+          const selected_div = label.nextElementSibling;
+          const selected = selected_div.querySelector('.selected-div');
 
-            const lumensLevP = document.querySelector('[data-field="lumens"]');
-            if (lumensLevP) {
-              lumensLevP.textContent = convertLumenValue(lumensValue);
-            }
+          const lumenLevelP = document.querySelector('[data-field="lumen level"]');
+        
+
+          if (lumenLevelP) {
+            lumenLevelP.textContent = convertColorTempValue(selected.dataset.value);
           }
+          
+        }
+        if (label.textContent.trim().toLowerCase() === 'lumen level') {
+          let selected_div = label.nextElementSibling;
+          selected_div = '';
+          // create new element here and then slay
+
+
+          console.log(selected_div);
         }
       });
     }
@@ -320,31 +330,35 @@ fetch('/api/pdfs')
 
     function updateCurrentValueSet() {
       curValueSet.length = 0;
-      document.querySelectorAll('.selection').forEach(sel => {
-        curValueSet.push(sel.value);
-      });
-    }
-
-    function updateRestrictions() {
-      
-      curOptions.forEach(opt => {
-        if (curValueSet.includes(opt.dependent)) {
-          const labels = document.querySelectorAll('#popup-body-main label');
-          labels.forEach(label => {
-            if (label.textContent.trim().toLowerCase() === opt.field_name) {
-              const select = label.nextElementSibling;
-              if (select && select.tagName === 'SELECT') {
-                console.log("This doesn't work right now."); 
-                // need to find a way to make the dependencies generalized such 
-                // that if multiplke exist they are all handled properly. This current 
-                // implementation would only work for one being lumens and it is very 
-                // resource intensive imo.
-              }
-            }
-          });
+      document.querySelectorAll('.custom-dropdown .selected-div').forEach(sel => {
+        if (sel.dataset.value == "NONE") {
+          curValueSet.push(null);
+        } else {
+          curValueSet.push(sel.dataset.value);
         }
       });
     }
+
+    // function updateRestrictions() {
+      
+    //   curOptions.forEach(opt => {
+    //     if (curValueSet.includes(opt.dependent)) {
+    //       const labels = document.querySelectorAll('#popup-body-main label');
+    //       labels.forEach(label => {
+    //         if (label.textContent.trim().toLowerCase() === opt.field_name) {
+    //           const select = label.nextElementSibling;
+    //           if (select && select.tagName === 'SELECT') {
+    //             console.log("This doesn't work right now."); 
+    //             // need to find a way to make the dependencies generalized such 
+    //             // that if multiplke exist they are all handled properly. This current 
+    //             // implementation would only work for one being lumens and it is very 
+    //             // resource intensive imo.
+    //           }
+    //         }
+    //       });
+    //     }
+    //   });
+    // }
 
     fetch('/api/unique_selections')
     .then(res => res.json())
@@ -354,55 +368,79 @@ fetch('/api/pdfs')
         .then(options => {
           selections.forEach(sel => {
             if (sel.type === selectedDiv.dataset.type) {
-              const display_div = document.createElement('div');
+
+              const wrapper_div = document.createElement('div');
+              wrapper_div.className = "dropdown-wrapper";
+
               const display_label = document.createElement('label');
               display_label.textContent = sel.field_name;
-              display_div.appendChild(display_label);
+              wrapper_div.appendChild(display_label);
 
-              const display_select = document.createElement('select');
-              display_select.classList.add('selection');
-              display_div.appendChild(display_select);
+              const dropdown = document.createElement('div');
+              dropdown.className = 'custom-dropdown selection';
 
-              display_select.addEventListener('change', function () {
-                updateCurrentValueSet();
-                updateRestrictions();
-              });
+              const selected = document.createElement('div');
+              selected.className = 'selected-div';
+              selected.textContent = 'Select...';
+              dropdown.appendChild(selected);
 
-              // Filter once, then add options
+              const ul = document.createElement('ul');
+              ul.className = 'dropdown-options';
 
               const matchingOptions = options.filter(opt =>
                 opt.field_name === sel.field_name && opt.type === selectedDiv.dataset.type
               );
               matchingOptions.forEach(opt => {
                 curOptions.push(opt);
-                const new_opt = document.createElement('option');
-                new_opt.textContent = opt.option_name;
-                new_opt.value = opt.option_name;
-                display_select.appendChild(new_opt);
+                const li = document.createElement('li');
+                if (opt.option_name == null) {
+                  li.textContent = "NONE";
+                } else {
+                  li.textContent = opt.option_name;
+                }
+
+                li.addEventListener('click', () => {
+                  if (opt.option_name == null) {
+                    selected.textContent = "NONE";
+                    selected.dataset.value = "NONE";
+                  } else {
+                    selected.textContent = opt.option_name;
+                    selected.dataset.value = opt.option_name;
+                  }
+
+                  updateCurrentValueSet();
+                  updateModelNumber();
+
+                  ul.classList.remove('show');
+
+                  if (sel.field_name.trim().toLowerCase() == "voltage") {
+                    voltage_flag = 1;
+                    getVoltage();
+                  }
+                  if (sel.field_name.trim().toLowerCase() == "lumens") {
+                    lumens_flag = 1;
+                    getLumens();
+                  }
+                  if (sel.field_name.trim().toLowerCase() == "color temperature" || sel.field_name.trim().toLowerCase() == "color_temp" ) {
+                    color_flag = 1;
+                    getColor();
+                  }
+                });
+                ul.appendChild(li);
               });
 
+              selected.addEventListener('click', () => {
+                document.querySelectorAll('.dropdown-options').forEach(u => u.classList.remove('show'));
+                ul.classList.toggle('show');
+              });
 
-              display_select.addEventListener('change', updateModelNumber);
-              displayPDFdetails.appendChild(display_div);
+              dropdown.appendChild(ul);
+              wrapper_div.appendChild(dropdown);
+              displayPDFdetails.appendChild(wrapper_div);
 
-              if (sel.field_name.trim().toLowerCase() == "voltage") {
-                voltage_flag = 1;
-                display_select.addEventListener('change', getVoltage);
-              }
-              if (sel.field_name.trim().toLowerCase() == "lumens") {
-                lumens_flag = 1;
-                display_select.addEventListener('change', getLumens);
-              }
-              if (sel.field_name.trim().toLowerCase() == "color temperature" || sel.field_name.trim().toLowerCase() == "color_temp" ) {
-                color_flag = 1;
-                display_select.addEventListener('change', getColor);
-              }
             }
           });
 
-          updateCurrentValueSet();
-          updateRestrictions();
-          updateModelNumber();
 
           if (voltage_flag == 1) {
             buildBox("VOLTAGE REQUIREMENT", true, "voltage");
@@ -449,3 +487,6 @@ fetch('/api/pdfs')
   document.getElementById("exit_button").addEventListener("click", function() {
     closePopup();
   });
+
+
+// custom dropdown
