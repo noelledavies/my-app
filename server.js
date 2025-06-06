@@ -192,6 +192,7 @@ app.get('/api/export-entries', (req, res) => {
     // Convert rows to worksheet and workbook
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
+    
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Entries');
 
     // Write to a buffer

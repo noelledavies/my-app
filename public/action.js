@@ -23,9 +23,9 @@ Returns: none
 
 Description: updates the model number string with current .values of each select element with in_mn set to 1
 */
-function updateModelNumber() {
+function updateModelNumber(cur) {
   const mn_update = document.getElementById("mn");
-  mn_update.textContent = curValueSet.join('-');
+  mn_update.textContent = cur.join('-');
 }
 
 
@@ -67,6 +67,25 @@ function convertColorTempValue(str) {
   }
 }
 
+/* 
+Function: convertVoltageValue
+
+Parameters: str - string to be converted
+
+Returns: concat "V" at end
+
+Description: corrects the formatting from the input lumen value to properly populate lumen level field
+*/
+function convertVoltageValue(str) {
+  // regex to get trailing 2 digits
+  const numericPart = str.match(/\d+/);
+  if (numericPart) {
+    return `${numericPart}V`;
+  } else {
+    return str;
+  }
+}
+
 
 /* 
 Function: closePopup
@@ -93,68 +112,43 @@ Returns: none
 Description: collects all current .values of each select element and formats into database ready format
 */
 function exportEntry() {
-  // variables
-  const allSelections = document.querySelectorAll('#popup-body-main select.selection');
-  const type = selectedDiv?.dataset.type;
-  let exportArray = [];
-  let modelNumberParts = [];
-  let otherParts = [];
-
-  // iterate through select elements
-  for (let select of allSelections) {
-    // variables
-    const label = select.previousElementSibling?.textContent.trim();
-    const val = select.value;
-    const rule = mnRules.find(rule => rule.type === type && rule.field_name === label);
-
-    // check if qualfies
-    if (val && val !== "null" && rule && rule.in_mn === 1) {
-      modelNumberParts.push(val);
-    } else if (label == "voltage_req" || 
-                label == "source" || 
-                label == "wattage" || 
-                label == "lumen_level" || 
-                label == "color_temp_k" || 
-                label == "driver_req" || 
-                label == "dimensions" || 
-                label == "mounting_type" ||
-                label == "luminaire_type") {
-      otherParts.push(val);
-    }
-  }
-
-  // separater
-  const modelNumber = modelNumberParts.join('-');
-
-  exportArray.push(modelNumber);
-
-  for (let each of otherParts) {
-    exportArray.push(each);
-  }
-
-  const [
-    model_num, voltage_req, source, wattage,
-    lumen_level, color_temp_k, driver_req,
-    dimensions, mounting_type, luminaire_type
-  ] = exportArray;
+  // here need to isolate and assign all data to variables for use in the db post below
+  // plan out how to isolate and structure the passing of this data for the excel sheet
   
-  fetch('/api/entries', {
+
+  // const entries = [{
+  //   type: type_value,
+  //   spec_sheet: filePath,
+  //   manufacturer: manufacturer,
+  //   model_num: curValueSet,
+  //   voltage_req: /*var here */,
+  //   source: /*var here */,
+  //   wattage: /*var here */,
+  //   lumen_level /*var here */,
+  //   color_temp: /*var here */,
+  //   driver_req: /*var here */,
+  //   dimensions: /*var here */,
+  //   mounting_type:/*var here */,
+  //   luminaire_type: /*var here */,
+  //   notes: /*var here */
+  // }];
+
+  fetch('/api/pdfs', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model_num, voltage_req, source, wattage,
-      lumen_level, color_temp_k, driver_req,
-      dimensions, mounting_type, luminaire_type
-    })
+    body: JSON.stringify(basics)
   })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Entry added:', data);
-      // maybe show a confirmation to the user?
-    })
-    .catch(err => {
-      console.error('Failed to add entry:', err);
-    });
+  .then(response => {
+    if (!response.ok) throw new Error("Failed to save metadata");
+    return response.json();
+  })
+  .then(data => {
+    console.log("Saved to DB:", data);
+    closePopup();
+  })
+  .catch(err => {
+    console.error("Error posting to DB:", err);
+  });
 }
 
 
@@ -216,8 +210,6 @@ fetch('/api/pdfs')
 
     popup.classList.add("open");
 
-    let currentSelections = {};
-
     document.getElementById('popup-body-main').innerHTML = '';
 
     const type = selectedDiv.dataset.type;
@@ -251,66 +243,102 @@ fetch('/api/pdfs')
 
     function getVoltage() {
       const labels = document.querySelectorAll('#popup-body-main label');
+      let selected = '';
+
       labels.forEach(label => {
         if (label.textContent.trim().toLowerCase() === 'voltage') {
-          const select = label.nextElementSibling;
-          if (select && select.tagName === 'SELECT') {
-            const voltageValue = select.value;
-
-            const voltageReqP = document.querySelector('[data-field="voltage"]');
-            if (voltageReqP) {
-              voltageReqP.textContent = voltageValue;
-            }
-          }
+          const selected_div = label.nextElementSibling;
+          selected = selected_div.querySelector('.selected-div');
         }
       });
+
+      let selected_div = document.querySelector('.voltage-requirement');
+
+      if (selected_div) {
+        const input = selected_div.querySelector('input');
+        if (input) {
+          input.remove();
+        }
+        const existing_p = selected_div.querySelector('p');
+        if (existing_p) {
+          existing_p.remove();
+        }
+
+        const new_p = document.createElement('p');
+        new_p.textContent = convertVoltageValue(selected.dataset.value);
+        selected_div.appendChild(new_p);
+      } else {
+        console.log("No element with class 'voltage' found.");
+      }
     }
 
     function getLumens() {
       const labels = document.querySelectorAll('#popup-body-main label');
+      let selected = '';
       labels.forEach(label => {
         if (label.textContent.trim().toLowerCase() === 'lumens') {
           const selected_div = label.nextElementSibling;
-          const selected = selected_div.querySelector('.selected-div');
-
-          const lumenLevelP = document.querySelector('[data-field="lumen level"]');
-        
-
-          if (lumenLevelP) {
-            lumenLevelP.textContent = convertColorTempValue(selected.dataset.value);
-          }
-          
-        }
-        if (label.textContent.trim().toLowerCase() === 'lumen level') {
-          let selected_div = label.nextElementSibling;
-          selected_div = '';
-          // create new element here and then slay
-
-
-          console.log(selected_div);
+          selected = selected_div.querySelector('.selected-div');
         }
       });
+      let selected_div = document.querySelector('.lumen-level');
+
+      if (selected_div) {
+        const input = selected_div.querySelector('input');
+        if (input) {
+          input.remove();
+        }
+        const existing_p = selected_div.querySelector('p');
+        if (existing_p) {
+          existing_p.remove();
+        }
+
+        let new_p = document.createElement('p');
+        new_p.textContent = convertLumenValue(selected.dataset.value);
+        selected_div.appendChild(new_p);
+      } else {
+        console.log("No element with class 'lumen level' found.");
+      }
     }
 
     function getColor() {
       const labels = document.querySelectorAll('#popup-body-main label');
-      labels.forEach(label => {
-        if (label.textContent.trim().toLowerCase() === 'color temperature' || label.textContent.trim().toLowerCase() === 'color_temp') {
-          const select = label.nextElementSibling;
-          if (select && select.tagName === 'SELECT') {
-            const colorValue = select.value;
+      let selected = '';
 
-            const colorTempP = document.querySelector('[data-field="color temperature"]');
-            if (colorTempP) {
-              colorTempP.textContent = convertColorTempValue(colorValue);
-            }
-          }
+      labels.forEach(label => {
+        if (
+          label.textContent.trim().toLowerCase() === 'color temperature' ||
+          label.textContent.trim().toLowerCase() === 'color temp'
+        ) {
+          const selected_div = label.nextElementSibling;          
+          selected = selected_div.querySelector('.selected-div');
         }
       });
+
+      let selected_div = document.querySelector('.color-temperature-k');
+
+      if (selected_div) {
+        const input = selected_div.querySelector('input');
+        if (input) {
+          input.remove();
+        }
+        const existing_p = selected_div.querySelector('p');
+        if (existing_p) {
+          existing_p.remove();
+        }
+
+        const new_p = document.createElement('p');
+        new_p.textContent = convertColorTempValue(selected.dataset.value);
+        selected_div.appendChild(new_p);
+      } 
     }
 
     function buildBox(title, p, fieldKey = "") {
+      const dynamic_div = document.createElement('div');
+      dynamic_div.className = "dynamic-box";
+
       const display_div = document.createElement('div');
+      display_div.className = title.replace(/\s+/g, '-').toLowerCase();
       const display_label = document.createElement('label');
       display_label.textContent = title;
       display_div.appendChild(display_label);
@@ -325,19 +353,68 @@ fetch('/api/pdfs')
         display_div.appendChild(display_input);
       }
 
-      displayPDFdetails.appendChild(display_div);
+      dynamic_div.appendChild(display_div);
+
+      displayPDFdetails.appendChild(dynamic_div);
     }
 
-    function updateCurrentValueSet() {
-      curValueSet.length = 0;
-      document.querySelectorAll('.custom-dropdown .selected-div').forEach(sel => {
-        if (sel.dataset.value == "NONE") {
-          curValueSet.push(null);
-        } else {
-          curValueSet.push(sel.dataset.value);
-        }
-      });
-    }
+
+
+    async function updateCurrentValueSet() {
+      try {
+        curValueSet.length = 0;
+
+      let mn_array = [];
+
+        const response = await fetch(`/api/in_mn`);
+        const data = await response.json();
+        const matching_mn = data.filter(obj => obj.type === selectedDiv.dataset.type);
+        matching_mn.forEach(obj => {
+          mn_array.push(obj.field_name.replace(/[-_]+/g, ' ').trim().toUpperCase());
+        });
+        document.querySelectorAll('.dropdown-wrapper').forEach(sel => {
+          if (mn_array.includes(sel.querySelector('label').textContent)) {
+            const custom_select = sel.querySelector('div')
+            
+            if (custom_select.querySelector('div').dataset.value == "NONE") {
+              curValueSet.push(null);
+            } else {
+              curValueSet.push(custom_select.querySelector('div').dataset.value);
+            }            
+          }
+        });
+
+      } catch (err) {
+        console.error("Fetch error:", err);
+        return false;
+      }
+
+      updateModelNumber(curValueSet);
+      
+      // curValueSet.length = 0;
+
+      // let mn_array = [];
+
+      // fetch('/api/in_mn')
+      //   .then(res => res.json())
+      //   .then(mn => {
+      //     matching_mn = mn.filter(obj => obj.type === selectedDiv.dataset.type);
+      //     matching_mn.forEach(obj => {
+      //       mn_array.push(obj.field_name.replace(/[-_]+/g, ' ').trim().toUpperCase());
+      //     });
+      //     document.querySelectorAll('.dropdown-wrapper').forEach(sel => {
+      //       if (mn_array.includes(sel.querySelector('label').textContent)) {
+      //         if (sel.dataset.value == "NONE") {
+      //           curValueSet.push(null);
+      //         } else {
+      //           curValueSet.push(sel.dataset.value);
+      //         }            
+      //       }
+      //     });
+      //   });
+
+        
+      }
 
     // function updateRestrictions() {
       
@@ -373,7 +450,10 @@ fetch('/api/pdfs')
               wrapper_div.className = "dropdown-wrapper";
 
               const display_label = document.createElement('label');
-              display_label.textContent = sel.field_name;
+              display_label.textContent = sel.field_name
+              .replace(/[-_]+/g, ' ')
+              .trim()
+              .toUpperCase();
               wrapper_div.appendChild(display_label);
 
               const dropdown = document.createElement('div');
@@ -409,7 +489,6 @@ fetch('/api/pdfs')
                   }
 
                   updateCurrentValueSet();
-                  updateModelNumber();
 
                   ul.classList.remove('show');
 
@@ -457,10 +536,10 @@ fetch('/api/pdfs')
           }
 
           if (color_flag == 1) {
-            buildBox("COLOR TEMPERATURE", true, "color temperature");
+            buildBox("COLOR TEMPERATURE K", true, "color temperature k");
             getColor();
           } else {
-            buildBox("COLOR TEMPERATURE", false);
+            buildBox("COLOR TEMPERATURE K", false);
           }
         });
       });
@@ -487,6 +566,3 @@ fetch('/api/pdfs')
   document.getElementById("exit_button").addEventListener("click", function() {
     closePopup();
   });
-
-
-// custom dropdown

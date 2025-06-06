@@ -317,6 +317,7 @@ document.getElementById("add_field_input").addEventListener('keydown', (e) => {
 document.querySelectorAll('.md').forEach(setupOptionEntry);
   
 document.getElementById("save_button").addEventListener("click", async function() {
+
   const type_value = document.getElementById("type_input").value.trim();
   const manufacturer = document.getElementById("manu_input").value.trim().toUpperCase();
   const fileInput = document.getElementById("basic_input_link");
@@ -397,31 +398,36 @@ document.getElementById("save_button").addEventListener("click", async function(
 
   const field_divs = document.querySelectorAll('.md');
   field_divs.forEach(field => {
-  const key = field.dataset.key;
-  const option_elements = field.querySelectorAll('.option-list .option-item p');
+    const key = field.dataset.key;
+    const option_elements = field.querySelectorAll('.option-list .option-item p');
 
-  if (key) {
-    const in_mn_value = document.getElementById('edit_mn').classList.contains('open') ? 1 : 0;
+    if (key) {
+      const in_mn_value = document.getElementById('edit_mn').classList.contains('open') ? 1 : 0;
 
-    option_elements.forEach(p => {
-      const value = p.textContent.trim().toUpperCase();
-      if (value) {
-        selection_rows.push({
-          type: type_value,
-          field_name: key.toUpperCase(),
-          option_name: value,
-          dependent: null
-        });
-      }
-    });
+      option_elements.forEach(p => {
+        const value = p.textContent.trim().toUpperCase();
+        if (value) {
+          selection_rows.push({
+            type: type_value,
+            field_name: key.toUpperCase(),
+            option_name: value,
+            dependent: null
+          });
+        }
+      });
+    }
+  });
+  const mdFieldsInMN = document.querySelectorAll('#edit_mn #field_section .md');
 
+  mdFieldsInMN.forEach(md => {
+    // Do something with each .md inside the model number editor section
+    const key = md.dataset.key;
     mn_rows.push({
       type: type_value,
       field_name: key.toUpperCase(),
-      in_mn: in_mn_value
+      in_mn: 1
     });
-  }
-});
+  });
 
   fetch('/api/selections', {
     method: 'POST',
