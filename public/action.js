@@ -5,12 +5,23 @@ const pdfSelect = document.getElementById('pdf-select');
 const optionsSelect = document.getElementById('options-select');
 const displayPDF = document.getElementById('display-pdfs');
 const displayPDFdetails = document.getElementById('popup-body-main');
+
+
 let curValueSet = [];
 let curOptions = [];
+const selectedMNValues = {};
+const selectedMDValues = {};
 
 let selectedDiv = null;
 let popup = document.getElementById('popup');
+let sched_popup = document.getElementById('sched-popup');
+const displaySchedule = document.getElementById('sched-popup-body');
+let selected_sched = document.querySelector('#sched-popup-body .custom-dropdown .selected-div');
+let selected_sheet = document.querySelector('#sched-popup-body .custom-dropdown .selected-div');
+let notes = document.querySelector('#popup-body textarea');
+let mn = document.querySelector('#popup-header-bar #mn');
 
+ let entryPost = [];
 
 
 // FUNCTIONS
@@ -86,6 +97,15 @@ function convertVoltageValue(str) {
   }
 }
 
+function stripPopupListeners() {
+  document
+    .querySelectorAll('.popup button, .sched-popup button')
+    .forEach(btn => {
+      const clone = btn.cloneNode(true);  // true => keep child text/markup
+      btn.replaceWith(clone);
+    });
+}
+
 
 /* 
 Function: closePopup
@@ -97,9 +117,16 @@ Returns: none
 Description: closes the currently open popup by removing the "open" class
 */
 function closePopup() {
-  popup.classList.remove("open");
+
+  stripPopupListeners();
+
+  sched_popup.classList.remove("open");
+  document.getElementById('overlay').classList.add('hidden');
   document.querySelectorAll('.pdf_in_use').forEach(el => el.remove());
 }
+
+
+
 
 
 /* 
@@ -143,14 +170,19 @@ function exportEntry() {
     return response.json();
   })
   .then(data => {
-    console.log("Saved to DB:", data);
     closePopup();
   })
   .catch(err => {
-    console.error("Error posting to DB:", err);
   });
 }
 
+function normalizeLabel(label) {
+  return label
+    .replace(/\s+/g, '_')         // spaces → underscores
+    .replace(/[^A-Z0-9_]/gi, '')  // keep letters/numbers/underscores (case-insensitive)
+    .toUpperCase()                // THEN convert to uppercase
+    .trim();
+}
 
 
 // DB OPERATIONS ON INDEX.HTML
@@ -203,12 +235,166 @@ fetch('/api/pdfs')
   });
 });
 
+async function gatherInputData() {
+  // reset from any previous run
+  Object.keys(selectedMNValues).forEach(k => delete selectedMNValues[k]);
+  Object.keys(selectedMDValues).forEach(k => delete selectedMDValues[k]);
+
+  const dropdowns = document.querySelectorAll('#popup-body .dropdown-wrapper');
+
+  const mnEntries   = await fetch('/api/mn').then(r => r.json());
+  const mnFieldList = mnEntries.map(e => e.field_name);
+
+  dropdowns.forEach(div => {
+    const rawLabel = div.querySelector('label').textContent.trim();
+    const label = normalizeLabel(rawLabel);
+    const value = div.querySelector('.custom-dropdown .selected-div').textContent;
+
+    if (mnFieldList.includes(label)) {
+      selectedMNValues[label] = value;
+    } else {
+      selectedMDValues[label] = value;
+    }
+  });
+
+  const inputs = document.querySelectorAll('#popup-body .dynamic-box');
+
+  inputs.forEach(div => {
+    const rawLabel = div.querySelector('label').textContent.trim();
+    const label = normalizeLabel(rawLabel);
+    const input = div.querySelector('input');
+
+    const value = input ? input.value : "";
+    selectedMDValues[label] = value;
+
+  });
+
+  // entryPost.length = 0;
+
+  // entryPost.push(selectedDiv.dataset.type);
+
+  selected_sched = document.querySelector('#sched-popup-body .selected-div').textContent;
+  // entryPost.push(selected_sched);
+
+  mn = document.querySelector('#popup-header-bar #mn');
+  // entryPost.push(mn.textContent);
+
+  // jsonMN = JSON.stringify(selectedMNValues);
+  // entryPost.push(jsonMN);
+
+  // Object.keys(selectedMDValues).forEach(key => {
+  //   //entryPost.push(selectedMDValues[key]);
+  //   console.log(key, selectedMDValues[key]);
+  // });
+
+  notes = document.querySelector('#popup-body textarea');
+  // entryPost.push(notes.value);
+
+  console.log(selectedMDValues);
+
+  const entryObject = {
+    type: selectedDiv.dataset.type,
+    schedule_name: selected_sched,
+    mn_code: mn.textContent,
+    model_num: JSON.stringify(selectedMNValues),
+    voltage_req: selectedMDValues['VOLTAGE_REQUIREMENT'],
+    source: selectedMDValues['SOURCE'],
+    wattage: selectedMDValues['WATTAGE'],
+    lumen_level: selectedMDValues['LUMEN_LEVEL'],
+    color_temp_k: selectedMDValues['COLOR_TEMPERATURE_K'],
+    driver_req: selectedMDValues['DRIVER_REQUIREMENTS'],
+    dimensions: selectedMDValues['DIMENSIONS'],
+    mounting_type: selectedMDValues['MOUNTING_TYPE'],
+    luminaire_type: selectedMDValues['LUMINAIRE_TYPE'],
+    notes: notes.value
+  };
+
+  fetch('/api/entries', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entryObject)
+  })
+}
+
+
+
+function addToSchedule() {
+
+  fetch('/api/schedules')
+  .then(res => res.json())
+  .then(entries => {
+
+    displaySchedule.innerHTML = '';
+
+    sched_popup.classList.add("open");
+
+    const wrapper_div = document.createElement('div');
+    wrapper_div.className = "dropdown-wrapper";
+
+    const dropdown = document.createElement('div');
+    dropdown.className = 'custom-dropdown selection';
+
+    const selected = document.createElement('div');
+    selected.className = 'selected-div';
+    selected.textContent = 'Select...';
+    dropdown.appendChild(selected);
+
+    const ul = document.createElement('ul');
+    ul.className = 'dropdown-options';
+
+    entries.forEach(entry => {
+
+      const li = document.createElement('li');
+      li.textContent = entry.name;
+
+      li.addEventListener('click', () => {
+        if (entry.name == null) {
+          selected.textContent = "NONE";
+          selected.dataset.value = "NONE";
+        } else {
+          selected.textContent = entry.name;
+          selected.dataset.value = entry.name;
+        }
+        ul.classList.remove('show');
+      });
+
+      ul.appendChild(li);
+    });
+
+    selected.addEventListener('click', () => {
+      document.querySelectorAll('.dropdown-options').forEach(u => u.classList.remove('show'));
+      ul.classList.toggle('show');
+    });
+
+    dropdown.appendChild(ul);
+    wrapper_div.appendChild(dropdown);
+    displaySchedule.appendChild(wrapper_div);
+  });
+
+
+  popup.classList.remove("open");
+
+  document.getElementById("done_button").addEventListener("click", async () => {
+    await gatherInputData();
+    closePopup();
+  });
+  document.getElementById("back_button").addEventListener("click", function() {
+    console.log("back queen");
+    closePopup();
+  });
+  
+  document.querySelectorAll('.file').forEach(d => d.classList.remove('selected'));
+
+}
+
 
 
   // popup functions
   function openPopup(selectedDiv) {
 
     popup.classList.add("open");
+    document.getElementById('overlay').classList.remove('hidden');
+    
 
     document.getElementById('popup-body-main').innerHTML = '';
 
@@ -218,7 +404,7 @@ fetch('/api/pdfs')
 
     const mn = document.getElementById("popup-header-mn");
     const display_mn = document.createElement('p');
-    display_mn.textContent = "------------------------";
+    display_mn.textContent = "_________________________";
     display_mn.id = "mn";
     display_mn.className = "pdf_in_use";
     mn.appendChild(display_mn);
@@ -267,9 +453,7 @@ fetch('/api/pdfs')
         const new_p = document.createElement('p');
         new_p.textContent = convertVoltageValue(selected.dataset.value);
         selected_div.appendChild(new_p);
-      } else {
-        console.log("No element with class 'voltage' found.");
-      }
+      } 
     }
 
     function getLumens() {
@@ -352,9 +536,7 @@ fetch('/api/pdfs')
         display_input.type = "text";
         display_div.appendChild(display_input);
       }
-
       dynamic_div.appendChild(display_div);
-
       displayPDFdetails.appendChild(dynamic_div);
     }
 
@@ -364,15 +546,15 @@ fetch('/api/pdfs')
       try {
         curValueSet.length = 0;
 
-      let mn_array = [];
+        let mn_array = [];
 
-        const response = await fetch(`/api/in_mn`);
+        const response = await fetch(`/api/mn`);
         const data = await response.json();
         const matching_mn = data.filter(obj => obj.type === selectedDiv.dataset.type);
         matching_mn.forEach(obj => {
           mn_array.push(obj.field_name.replace(/[-_]+/g, ' ').trim().toUpperCase());
         });
-        document.querySelectorAll('.dropdown-wrapper').forEach(sel => {
+        document.querySelectorAll('#popup-body-main .dropdown-wrapper').forEach(sel => {
           if (mn_array.includes(sel.querySelector('label').textContent)) {
             const custom_select = sel.querySelector('div')
             
@@ -388,34 +570,10 @@ fetch('/api/pdfs')
         console.error("Fetch error:", err);
         return false;
       }
-
       updateModelNumber(curValueSet);
-      
-      // curValueSet.length = 0;
-
-      // let mn_array = [];
-
-      // fetch('/api/in_mn')
-      //   .then(res => res.json())
-      //   .then(mn => {
-      //     matching_mn = mn.filter(obj => obj.type === selectedDiv.dataset.type);
-      //     matching_mn.forEach(obj => {
-      //       mn_array.push(obj.field_name.replace(/[-_]+/g, ' ').trim().toUpperCase());
-      //     });
-      //     document.querySelectorAll('.dropdown-wrapper').forEach(sel => {
-      //       if (mn_array.includes(sel.querySelector('label').textContent)) {
-      //         if (sel.dataset.value == "NONE") {
-      //           curValueSet.push(null);
-      //         } else {
-      //           curValueSet.push(sel.dataset.value);
-      //         }            
-      //       }
-      //     });
-      //   });
-
-        
       }
 
+      //disabled function for right now - intended to do the option filtering for dependent fields
     // function updateRestrictions() {
       
     //   curOptions.forEach(opt => {
@@ -541,13 +699,19 @@ fetch('/api/pdfs')
           } else {
             buildBox("COLOR TEMPERATURE K", false);
           }
+
+          buildBox("WATTAGE", false, "wattage");
         });
       });
-
+      
+      document.querySelector('#popup-body textarea').value = "";
       // add to schedule listener
       document.getElementById("add_button").addEventListener("click", function() {
+        addToSchedule();
+      });
+
+      document.getElementById("exit_button").addEventListener("click", function() {
         closePopup();
-        exportEntry();
       });
     }
 
@@ -563,6 +727,4 @@ fetch('/api/pdfs')
     }
   });
   // close pdf selection listener
-  document.getElementById("exit_button").addEventListener("click", function() {
-    closePopup();
-  });
+  

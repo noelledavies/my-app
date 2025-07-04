@@ -7,6 +7,7 @@ db.serialize(() => {
   db.run("DROP TABLE IF EXISTS selections");
   db.run("DROP TABLE IF EXISTS pdfs");
   db.run("DROP TABLE IF EXISTS mn");
+  db.run("DROP TABLE IF EXISTS schedules");
 
 
   // create tables
@@ -36,7 +37,18 @@ db.serialize(() => {
   `);
 
   db.run(`
+    CREATE TABLE schedules (
+      name TEXT PRIMARY KEY, 
+      project TEXT,
+      created INTEGER
+    )
+  `);
+
+  db.run(`
     CREATE TABLE entries (
+      type TEXT,
+      schedule_name TEXT,
+      mn_code TEXT,
       model_num TEXT,
       voltage_req TEXT,
       source TEXT,
@@ -46,7 +58,8 @@ db.serialize(() => {
       driver_req TEXT,
       dimensions TEXT,
       mounting_type TEXT,
-      luminaire_type TEXT
+      luminaire_type TEXT,
+      notes TEXT
     )
   `);// add value to table to associate with table containing schedules 
 

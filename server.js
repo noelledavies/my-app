@@ -70,7 +70,7 @@ app.get('/api/unique_selections', (req, res) => {
   });
 });
 
-app.get('/api/in_mn', (req, res) => {
+app.get('/api/mn', (req, res) => {
   db.all('SELECT type, field_name, in_mn FROM mn', [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json(rows);
@@ -84,38 +84,15 @@ app.get('/api/entries', (req, res) => {
   });
 });
 
-app.use(express.json()); // make sure this is included
-
-app.post('/api/entries', (req, res) => {
-  const {
-    model_num, voltage_req, source, wattage,
-    lumen_level, color_temp_k, driver_req,
-    dimensions, mounting_type, luminaire_type
-  } = req.body;
-
-  const query = `
-    INSERT INTO entries (
-      model_num, voltage_req, source, wattage,
-      lumen_level, color_temp_k, driver_req,
-      dimensions, mounting_type, luminaire_type
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    model_num, voltage_req, source, wattage,
-    lumen_level, color_temp_k, driver_req,
-    dimensions, mounting_type, luminaire_type
-  ];
-
-  db.run(query, values, function (err) {
-    if (err) {
-      console.error('Insert error:', err.message);
-      return res.status(500).json({ error: err.message });
-    }
-    res.status(200).json({ message: 'Entry added', id: this.lastID });
+app.get('/api/schedules', (req, res) => {
+  db.all('SELECT * FROM schedules', [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(rows);
   });
 });
+
+app.use(express.json()); // make sure this is included
+
 
 app.post('/api/selections', (req, res) => {
   const options = req.body;
@@ -183,6 +160,62 @@ app.post('/api/pdfs', (req, res) => {
   stmt.finalize();
 });
 
+app.post('/api/entries', (req, res) => {
+  const {
+    type, schedule_name, mn_code, model_num,
+    voltage_req, source, wattage,
+    lumen_level, color_temp_k, driver_req,
+    dimensions, mounting_type, luminaire_type,
+    notes
+  } = req.body;
+
+  const query = `
+    INSERT INTO entries (
+      type, schedule_name, mn_code, model_num,
+      voltage_req, source, wattage,
+      lumen_level, color_temp_k, driver_req,
+      dimensions, mounting_type, luminaire_type,
+      notes
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  const values = [
+    type, schedule_name, mn_code, model_num,
+    voltage_req, source, wattage,
+    lumen_level, color_temp_k, driver_req,
+    dimensions, mounting_type, luminaire_type,
+    notes
+  ];
+
+  db.run(query, values, function (err) {
+    if (err) {
+      console.error('Insert error:', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ message: 'Entry added', id: this.lastID });
+  });
+});
+
+
+
+
+app.post('/api/schedules', (req, res) => {
+  const [name, project, created] = req.body;
+
+  const query = `
+    INSERT INTO schedules (name, project, created)
+    VALUES (?, ?, ?)
+  `;
+
+  db.run(query, [name, project, created], function (err) {
+    if (err) {
+      console.error('Insert error:', err.message);
+      return res.status(500).json({ error: err.message });
+    }
+    res.status(200).json({ message: 'Schedule added', id: this.lastID });
+  });
+});
 app.get('/api/export-entries', (req, res) => {
   db.all('SELECT * FROM entries', [], (err, rows) => {
     if (err) {

@@ -47,12 +47,63 @@
                     <div id="display-schedule">
                     </div>
                 </div>
+            </div>
+            <div class="add_schedule overlay hidden" id="overlay">
+                <div class="popup" id="popup">
+                    <div class="popup_header">
+                        <div class="popup_header_entry">
+                            <p>NAME</p>
+                        </div>
+                        <div class="popup_header_entry">
+                            <p>PROJECT</p>
+                        </div>
+                        <div class="popup_header_entry">
+                            <p>CREATED</p>
+                        </div>
+                    </div>
+                    <div id="popup-body">
+                        <div class="sched_entry">
+                                <input type="text" id="sched_name">
+                            </div>
+                            <div class="sched_entry">
+                                <input type="text" id="sched_project">
+                            </div>
+                            <div class="sched_entry">
+                                <div id="sched_created">
 
+                                </div>
+                            </div>
+                    </div>
+                    <div class="popup-buttons">
+                            <button class="exit_button">Exit</button>
+                            <button id="add_button">Add to Schedule</button>
+                    </div>
+                </div>
+                <div class="schedule_popup" id="schedule_popup">
+                    <div class="popup_header">
+                        <div class="popup_header_entry">
+                            <p>NAME</p>
+                        </div>
+                        <div class="popup_header_entry">
+                            <p>PROJECT</p>
+                        </div>
+                        <div class="popup_header_entry">
+                            <p>CREATED</p>
+                        </div>
+                    </div>
+                    <div id="popup-body">
+                        
+                    </div>
+                    <div class="popup-buttons">
+                            <button class="exit_button">Exit</button>
+                            <button id="add_button">Add to Schedule</button>
+                    </div>
+                </div>
             </div>
             <div class="ButtonBox">
-                <button id="export_button">Export</button>
+                <button id="add_schedule_button">New Schedule</button>
+                <button id="open_button">Open</button>
             </div>
-
         </div>
     </div>
     <script src="action2.js"></script>
